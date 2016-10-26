@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_sec_gray"
             android:text="11床"
             />
 
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_sec_gray"
             android:text="张三"
             />
 
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_sec_gray"
             android:text="女"
             />
 
@@ -48,52 +48,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="25"
+            android:textColor="@color/comm_sec_gray"
             android:maxLines="1"
             />
 
-        <TextView
-            android:id="@+id/instrument_nodata_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:text="未找到该患者，请选择"
-            android:textColor="#ff0000"
-            android:visibility="gone"
-            />
-
-        <LinearLayout
-            android:id="@+id/instrument_voice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            >
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@mipmap/voice_image"
-                />
-        </LinearLayout>
-
 
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#d1d1d1"
-        />
-
-
-    <ListView
-        android:id="@+id/instrument_listView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:dividerHeight="0.5dp"
-        android:divider="#d1d1d1"
-        >
-    </ListView>
-
 
 
 </LinearLayout>

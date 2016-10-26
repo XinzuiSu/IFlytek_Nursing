@@ -117,6 +117,17 @@ public class PatientInfoDao {
 
 
     /**
+     * 床号或姓名搜索患者列表
+     *
+     * @return
+     */
+    public List<PatientInfo> getPatientInfoList(String searchText) {
+        List<PatientInfo> patientInfos = db.queryList(PatientInfo.class, ":hosBedNum like ? or :patName like ?", "%"+searchText+"%","%"+searchText+"%");
+        return patientInfos;
+    }
+
+
+    /**
      * 清空患者数据
      *
      * @return

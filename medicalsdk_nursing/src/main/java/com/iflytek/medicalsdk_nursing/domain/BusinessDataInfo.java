@@ -1,8 +1,5 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
-import com.iflytek.android.framework.db.Column;
-import com.iflytek.android.framework.db.Entity;
-
 import java.util.List;
 
 /**
@@ -27,6 +24,18 @@ public class BusinessDataInfo {
      * 患者姓名
      */
     private String patName;
+    /**
+     * 床号
+     */
+    private String bedNo;
+    /**
+     * 性别
+     */
+    private String sex;
+    /**
+     * 年龄
+     */
+    private String age;
     /**
      * 病历代码
      */
@@ -93,6 +102,30 @@ public class BusinessDataInfo {
 
     public void setRecorderDate(String recorderDate) {
         this.recorderDate = recorderDate;
+    }
+
+    public String getBedNo() {
+        return bedNo;
+    }
+
+    public void setBedNo(String bedNo) {
+        this.bedNo = bedNo;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
     }
 
     public List<WSData> getWsDataList() {

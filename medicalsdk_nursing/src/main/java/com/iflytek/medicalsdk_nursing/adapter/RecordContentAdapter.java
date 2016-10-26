@@ -8,38 +8,37 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.iflytek.medicalsdk_nursing.R;
-import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
-import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
+import com.iflytek.medicalsdk_nursing.domain.WSData;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/10/19.
+ * Created by chenzhilei on 2016/10/19.
  */
 
 public class RecordContentAdapter extends BaseAdapter{
 
-    private List<DocumentDetailDic> instrumentDicList;
+    private List<WSData> wsDataList;
 
     private Context mContext;
 
     private SimpleDateFormat simpleDateFormat;
 
-    public RecordContentAdapter(Context context, List<DocumentDetailDic> instrumentDics){
-        this.instrumentDicList = instrumentDics;
+    public RecordContentAdapter(Context context, List<WSData> wsDatas){
+        this.wsDataList = wsDatas;
         this.mContext = context;
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
     public int getCount() {
-        return instrumentDicList.size();
+        return wsDataList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return instrumentDicList.get(position);
+        return wsDataList.get(position);
     }
 
     @Override
@@ -49,41 +48,35 @@ public class RecordContentAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-//        ViewHolder viewHolder;
-//        if (convertView == null){
-//            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_record_detail,null);
-//            viewHolder = new ViewHolder();
-//            viewHolder.typeText = (TextView) convertView.findViewById(R.id.detail_type);
-//            viewHolder.itemNameText = (TextView) convertView.findViewById(R.id.detail_item_name);
-//            viewHolder.itemValueText = (TextView) convertView.findViewById(R.id.detail_item_value);
-//            convertView.setTag(viewHolder);
-//        }else {
-//            viewHolder = (ViewHolder) convertView.getTag();
-//        }
-//        InstrumentDic instrumentDic = instrumentDicList.get(position);
-//        viewHolder.typeText.setText(instrumentDic.getInstruName());
-//        viewHolder.itemNameText.setText(instrumentDic.getProjectName());
-//        DocumentDetailDicDao documentDetailDicDao = new DocumentDetailDicDao(mContext);
-//        //假设“1”为选择项，其他为数值
-//        if (instrumentDic.getType() == "1"){
-//            ItemDic itemDic = documentDetailDicDao.getItemDic(instrumentDic.getValue());
-//            if (itemDic!=null){
-//                viewHolder.itemValueText.setText(itemDic.getCheckName());
-//            }else {
-//                viewHolder.itemValueText.setText(instrumentDic.getValue());
-//            }
-//        }else {
-//            //展示数值加单位
-//            viewHolder.itemValueText.setText(instrumentDic.getValue()+instrumentDic.getUnit());
-//        }
+        ViewHolder viewHolder;
+        if (convertView == null){
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_record_detail,null);
+            viewHolder = new ViewHolder();
+            viewHolder.nameText = (TextView) convertView.findViewById(R.id.detail_item_name);
+            viewHolder.valueText = (TextView) convertView.findViewById(R.id.detail_item_value);
+            viewHolder.unitText = (TextView) convertView.findViewById(R.id.detail_item_unit);
+            convertView.setTag(viewHolder);
+        }else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        WSData wsData = wsDataList.get(position);
+        viewHolder.nameText.setText(wsData.getWsName());
+        viewHolder.valueText.setText(wsData.getWsValue());
         return convertView;
     }
 
     static class ViewHolder{
-        private TextView typeText;
-
-        private TextView itemNameText;
-
-        private TextView itemValueText;
+        /**
+         * 项目名称
+         */
+        private TextView nameText;
+        /**
+         * 值
+         */
+        private TextView valueText;
+        /**
+         * 单位
+         */
+        private TextView unitText;
     }
 }

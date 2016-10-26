@@ -1,25 +1,27 @@
 package com.iflytek.medicalsdk_nursing;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvent;
-import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechUnderstander;
 import com.iflytek.cloud.SpeechUnderstanderListener;
 import com.iflytek.cloud.UnderstanderResult;
+import com.iflytek.medicalsdk_nursing.adapter.RecordAdapter;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
+import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
 import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
@@ -27,7 +29,13 @@ import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -43,13 +51,11 @@ public class RecordActivity extends Activity{
     private static String TAG = "Speech";
 
     /**
-     * 录音按键
+     * 时间基础格式化
      */
-    private ImageView voiceImage;
-    /**
-     * 结果文书
-     */
-    private TextView resultText;
+    public static final String DEAFULTFORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    private Spinner spinner;
 
     // 函数调用返回值
     private int ret = 0;
@@ -58,26 +64,63 @@ public class RecordActivity extends Activity{
 
     private ListView listView;
 
+    private List<BusinessDataInfo> businessDataInfoList;
+
+    private RecordAdapter recordAdapter;
+
+    private GLWaveformView glWaveFormView;
+
+    private TextView timeText;
+    /**
+     * 当前编辑患者标记
+     */
+    private int position;
+
+    private PatientInfoDao patientInfoDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
-        voiceImage = (ImageView) findViewById(R.id.record_voice_image);
-        resultText = (TextView) findViewById(R.id.record_text_result);
         listView = (ListView) findViewById(R.id.record_listView);
-        voiceImage.setOnClickListener(new View.OnClickListener() {
+        spinner = (Spinner) findViewById(R.id.record_spinner);
+        glWaveFormView = (GLWaveformView) findViewById(R.id.record_voice_image);
+        timeText = (TextView) findViewById(R.id.recored_time_text);
+        timeText.setText(getDate());
+        // 建立数据源
+        String[] mItems = {"入院评估","体温单"};
+        // 建立Adapter并且绑定数据源
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mItems);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //绑定 Adapter到控件
+        spinner.setAdapter(adapter);
+        glWaveFormView.init();
+
+        glWaveFormView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //播放
                 speech();
             }
         });
+
         mSpeechUnderstander = new SpeechHelper(RecordActivity.this).getmSpeechUnderstander();
-        PatientInfo patientInfo = new PatientInfo("0480392","04803921","221","0233154","1","1000654","5","张三","1989-09-21","男","12","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
+        PatientInfo patientInfo = new PatientInfo("0480392","04803921","221","0233154","1","1000654","5","张三","1989-09-21","男","11","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
         PatientInfo patientInfo2 = new PatientInfo("0480393","04803922","222","0233155","1","1000654","5","李四","1989-09-21","男","12","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
+        PatientInfo patientInfo3 = new PatientInfo("0480394","04803923","223","0233156","1","1000654","5","王石泉","1989-09-21","男","13","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
+        PatientInfo patientInfo4 = new PatientInfo("0480395","04803924","224","0233157","1","1000654","5","孙文静","1989-09-21","女","14","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
+        PatientInfo patientInfo5 = new PatientInfo("0480396","04803925","225","0233158","1","1000654","5","刘伟","1989-09-21","男","15","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
+        PatientInfo patientInfo6 = new PatientInfo("0480397","04803926","226","0233159","1","1000654","5","陈俊","1989-09-21","男","16","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
         List<PatientInfo> patientInfos =new ArrayList<>();
         patientInfos.add(patientInfo);
         patientInfos.add(patientInfo2);
+        patientInfos.add(patientInfo3);
+        patientInfos.add(patientInfo4);
+        patientInfos.add(patientInfo5);
+        patientInfos.add(patientInfo6);
+        patientInfoDao = new PatientInfoDao(RecordActivity.this);
+        patientInfoDao.deletePatientInfo();
+        patientInfoDao.saveOrUpdatePaintInfoList(patientInfos);
         String patientStr = new Gson().toJson(patientInfos);
         Log.d("PATIENT",patientStr);
 
@@ -121,6 +164,9 @@ public class RecordActivity extends Activity{
 
         BusinessDataInfo businessDataInfo = new BusinessDataInfo();
         businessDataInfo.setSyxh(patientInfo.getHosID());
+        businessDataInfo.setSex(patientInfo.getPatSex());
+        businessDataInfo.setBedNo(patientInfo.getHosBedNum());
+        businessDataInfo.setAge(patientInfo.getPatBirth());
         businessDataInfo.setYexh("");
         businessDataInfo.setPatName(patientInfo.getPatName());
         businessDataInfo.setNmrCode("");
@@ -137,24 +183,31 @@ public class RecordActivity extends Activity{
         String dataStr = new Gson().toJson(businessDataInfo);
         Log.d("DATA",dataStr);
 
+        businessDataInfoList = new ArrayList<>();
+        businessDataInfoList.add(businessDataInfo);
+        recordAdapter = new RecordAdapter(RecordActivity.this,businessDataInfoList);
+        listView.setAdapter(recordAdapter);
+        position = businessDataInfoList.size()-1;
+
     }
 
 
     private void speech() {
         if (mSpeechUnderstander.isUnderstanding()) {// 开始前检查状态
             mSpeechUnderstander.stopUnderstanding();
-            Toast.makeText(RecordActivity.this,"停止录音",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(RecordActivity.this,"停止录音",Toast.LENGTH_SHORT).show();
+            glWaveFormView.stopListening();
         } else {
             ret = mSpeechUnderstander.startUnderstanding(mSpeechUnderstanderListener);
             if (ret != 0) {
                 Toast.makeText(this, "语义理解失败", Toast.LENGTH_SHORT).show();
+                glWaveFormView.reset();
             } else {
-                Toast.makeText(this, "请说话", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "请说话", Toast.LENGTH_SHORT).show();
             }
         }
 
     }
-
 
 
     /**
@@ -164,7 +217,76 @@ public class RecordActivity extends Activity{
 
         @Override
         public void onResult(final UnderstanderResult result) {
-            resultText.append(result.getResultString());
+            glWaveFormView.reset();
+            BusinessDataInfo businessDataInfo = businessDataInfoList.get(position);
+            JSONObject jsonObject;
+            String service;
+            String key = "";
+            String value = "";
+            String name = "";
+            String bed = "";
+            try {
+                jsonObject = new JSONObject(result.getResultString());
+                service = jsonObject.optString("service");
+                JSONObject semanticObject = jsonObject.optJSONObject("semantic");
+                if (semanticObject != null){
+                    JSONObject slotsObject = semanticObject.optJSONObject("slots");
+                    Iterator<String> iterator = slotsObject.keys();
+                    key = iterator.next();
+                    value = slotsObject.optString(key);
+                    bed = slotsObject.optString("bed");
+                }
+                //护理业务
+                if (StringUtils.isEquals(service,"nursing")){
+                    if (StringUtils.isEquals(key,"type")){
+                        //切换种类
+                        return;
+
+                    }else if (StringUtils.isEquals(key,"bed")){
+                        BusinessDataInfo busInfo = null;
+                        int i = 0;
+                        for (BusinessDataInfo info:businessDataInfoList){
+                            if (StringUtils.isEquals(info.getBedNo(),bed)){
+                                busInfo = info;
+                                i = businessDataInfoList.indexOf(info);
+                                break;
+                            }
+                        }
+                        if (busInfo == null){
+                            busInfo = new BusinessDataInfo();
+                            busInfo.setBedNo(bed);
+                            PatientInfoDao patientInfoDao = new PatientInfoDao(RecordActivity.this);
+                            PatientInfo patientInfo = patientInfoDao.getPatientInfo(bed);
+                            if (patientInfo !=null){
+                                busInfo.setPatName(patientInfo.getPatName());
+                                busInfo.setAge(patientInfo.getPatBirth());
+                                busInfo.setSex(patientInfo.getPatSex());
+                            }
+                            busInfo.setWsDataList(new ArrayList<WSData>());
+                            businessDataInfoList.add(busInfo);
+                            position = businessDataInfoList.size()-1;
+                        }else {
+                            position = i;
+                            listView.setSelection(position);
+                            return;
+                        }
+                    }else {
+                        WSData wsData = new WSData();
+                        wsData.setWsName(key);
+                        wsData.setWsValue(value);
+                        businessDataInfo.getWsDataList().add(wsData);
+                        businessDataInfoList.set(position,businessDataInfo);
+                    }
+                }else {
+                    showTip("暂不支持您的说法");
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            recordAdapter = new RecordAdapter(RecordActivity.this,businessDataInfoList);
+            listView.setAdapter(recordAdapter);
+            listView.setSelection(position);
             IFlyNursing.getInstance().getNursingListener().onDataSavedListener(result.getResultString());
         }
 
@@ -172,23 +294,27 @@ public class RecordActivity extends Activity{
         public void onVolumeChanged(int volume, byte[] data) {
             //showTip("当前正在说话，音量大小：" + volume);
             Log.d(TAG, data.length + "");
+            glWaveFormView.setVolume(volume);
         }
 
         @Override
         public void onEndOfSpeech() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
-            showTip("结束说话");
+//            showTip("结束说话");
+            glWaveFormView.stopListening();
         }
 
         @Override
         public void onBeginOfSpeech() {
             // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
-            showTip("开始说话");
+//            showTip("开始说话");
+            glWaveFormView.start();
         }
 
         @Override
         public void onError(SpeechError error) {
-            showTip(error.getPlainDescription(true));
+            showTip(error.getPlainDescription(false));
+            glWaveFormView.reset();
 
         }
 
@@ -202,15 +328,66 @@ public class RecordActivity extends Activity{
         }
     };
 
+    private void transBed() {
 
 
-
-
-    private void showTip(String text){
-        Toast.makeText(RecordActivity.this,text,Toast.LENGTH_LONG).show();
     }
 
 
+    private void showTip(String text){
+        Toast.makeText(RecordActivity.this,text,Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * @return 得到基础时间  yyyy-MM-dd HH:mm:ss
+     */
+    public static String getDate() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+                DEAFULTFORMAT);
+        return simpleDateFormat.format(new Date());
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1002){
+            String bedNo = data.getStringExtra("PATIENT_BEDNO");
+            int count = data.getIntExtra("POSITION",0);
+            int i = -1;
+            for (BusinessDataInfo info:businessDataInfoList){
+                if (StringUtils.isEquals(info.getBedNo(),bedNo)){
+                    i = businessDataInfoList.indexOf(info);
+                    break;
+                }
+            }
+            if (i == -1){
+                PatientInfo patientInfo = patientInfoDao.getPatientInfo(bedNo);
+                BusinessDataInfo businessDataInfo = new BusinessDataInfo();
+                businessDataInfo.setSyxh(patientInfo.getHosID());
+                businessDataInfo.setSex(patientInfo.getPatSex());
+                businessDataInfo.setBedNo(patientInfo.getHosBedNum());
+                businessDataInfo.setAge(patientInfo.getPatBirth());
+                businessDataInfo.setYexh("");
+                businessDataInfo.setPatName(patientInfo.getPatName());
+                businessDataInfo.setNmrCode("");
+                businessDataInfo.setDate("2016-09-10");
+                businessDataInfo.setRecorderDate("2016-10-21");
+                businessDataInfo.setWsDataList(new ArrayList<WSData>());
+                businessDataInfoList.set(count,businessDataInfo);
+                recordAdapter = new RecordAdapter(this,businessDataInfoList);
+                listView.setAdapter(recordAdapter);
+                listView.setSelection(count);
+                position = count;
+            }else {
+                listView.setSelection(i);
+                position = i;
+                showTip("该患者已录入，可直接录入信息");
+            }
+
+
+        }
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

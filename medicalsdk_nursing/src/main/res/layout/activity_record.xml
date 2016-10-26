@@ -2,48 +2,136 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#FFFFFFFF"
     >
+    
+    <RelativeLayout
+        android:id="@+id/record_title_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@mipmap/title_bg"
+        android:gravity="center_vertical"
+        >
+        <LinearLayout
+            android:id="@+id/record_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/back_image"
+                />
 
-    <TextView
-        android:id="@+id/record_text_txjg"
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="语音护理"
+            android:textSize="20sp"
+            />
+        
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/record_time_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:text="听写结果:"
-        android:textColor="@color/comm_gray"
-        />
-
-
-    <TextView
-        android:id="@+id/record_text_result"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_below="@id/record_title_layout"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@id/record_text_txjg"
-        android:text="测试语音记录"
-        />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="记录时间:"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/comm_gray"
+            android:textSize="14sp"
+            />
 
+        <TextView
+            android:id="@+id/recored_time_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/input_bg"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:textSize="14sp"
+            />
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/record_type_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_time_layout"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="文书类型:"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/comm_gray"
+            android:textSize="14sp"
+            />
+
+        <Spinner
+            android:id="@+id/record_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/spinner_bg"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            ></Spinner>
+
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/record_divider_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_type_layout"
+        android:background="@mipmap/list_divider"
+        />
 
     <ListView
         android:id="@+id/record_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/record_text_result"
+        android:layout_below="@+id/record_divider_image"
         android:layout_above="@+id/record_voice_image"
+        android:divider="@mipmap/list_divider"
         ></ListView>
 
-
     <ImageView
-        android:id="@+id/record_voice_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/voice_normal"
-        android:layout_marginBottom="30dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#d1d1d1"
         />
+
+
+    <com.iflytek.medicalsdk_nursing.GLWaveformView
+        android:id="@+id/record_voice_image"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

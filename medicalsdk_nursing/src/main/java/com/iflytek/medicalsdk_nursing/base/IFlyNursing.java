@@ -138,7 +138,7 @@ public class IFlyNursing {
      */
     private void init(Context context) {
         openBluetooth(context);
-        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=572855d1");
+        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545"+ ",server_url= http://bj.voicecloud.cn/index.htm");
         initDataBase(context);
     }
 

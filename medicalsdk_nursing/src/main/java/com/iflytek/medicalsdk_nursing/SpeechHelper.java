@@ -64,30 +64,45 @@ public class SpeechHelper {
         return mSpeechUnderstander;
     }
 
-    public void setParam(){
+    /**
+     * 参数设置
+     *
+     * @return
+     */
+    public void setParam() {
         String lang = mSharedPreferences.getString("understander_language_preference", "mandarin");
         if (lang.equals("en_us")) {
             // 设置语言
             mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "en_us");
-        }else {
+        } else {
             // 设置语言
             mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
             // 设置语言区域
             mSpeechUnderstander.setParameter(SpeechConstant.ACCENT, lang);
+            mSpeechUnderstander.setParameter(SpeechConstant.DOMAIN, "jdsearch");
+            mSpeechUnderstander.setParameter(SpeechConstant.SAMPLE_RATE, "16000");
+
         }
+        //mSpeechUnderstander.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
         // 设置语音前端点:静音超时时间，即用户多长时间不说话则当做超时处理
-        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, mSharedPreferences.getString("understander_vadbos_preference", "4000"));
+        mSpeechUnderstander.setParameter(SpeechConstant.VAD_BOS, mSharedPreferences.getString
+                ("understander_vadbos_preference", "4000"));
 
         // 设置语音后端点:后端点静音检测时间，即用户停止说话多长时间内即认为不再输入， 自动停止录音
-        mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, mSharedPreferences.getString("understander_vadeos_preference", "1000"));
+        mSpeechUnderstander.setParameter(SpeechConstant.VAD_EOS, mSharedPreferences.getString
+                ("understander_vadeos_preference", "2000"));
 
         // 设置标点符号，默认：1（有标点）
-        mSpeechUnderstander.setParameter(SpeechConstant.ASR_PTT, mSharedPreferences.getString("understander_punc_preference", "1"));
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_PTT, mSharedPreferences.getString
+                ("understander_punc_preference", "1"));
 
         // 设置音频保存路径，保存音频格式支持pcm、wav，设置路径为sd卡请注意WRITE_EXTERNAL_STORAGE权限
         // 注：AUDIO_FORMAT参数语记需要更新版本才能生效
         mSpeechUnderstander.setParameter(SpeechConstant.AUDIO_FORMAT, "wav");
-        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory()+"/msc/sud.wav");
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() +
+                "/msc/sud.wav");
+
+
     }
 
 

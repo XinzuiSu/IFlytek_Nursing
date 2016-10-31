@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteStatement;
 import com.iflytek.android.framework.db.DbHelper;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
-import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
+import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 
 import java.util.List;
@@ -16,29 +16,29 @@ import java.util.List;
 /**
  * @Title: com.iflytek.dao.PaintInfoDao
  * @Copyright: IFlytek Co., Ltd. Copyright 16/3/31-下午2:57,  All rights reserved
- * @Description: TODO 文书字典数据库操作类;
+ * @Description: TODO 映射关系数据库操作类;
  * @author: chenzhilei
  * @data: 16/3/31 下午2:57
  * @version: V1.0
  */
-public class DocumentDicDao {
+public class MappingDao {
     /**
      * 数据库操作类
      */
     DbHelper db;
 
-    public DocumentDicDao(Context context) {
+    public MappingDao(Context context) {
         db = IFlyNursing.getInstance().getDbHelper();
-        db.checkOrCreateTable(DocumentDic.class);
+        db.checkOrCreateTable(MappingInfo.class);
     }
 
 
     /**
-     * 批量插入文书信息到数据库中
+     * 批量插入映射关系数据信息到数据库中
      *
      * @param list
      */
-    public boolean saveOrUpdateDocumentDicList(List<DocumentDic> list) {
+    public boolean saveOrUpdateMappingInfoList(List<MappingInfo> list) {
         if (null == list || list.size() <= 0) {
             return false;
         }
@@ -46,16 +46,15 @@ public class DocumentDicDao {
         SQLiteDatabase db1 = db.getDb();
         try {
             StringBuilder sql = new StringBuilder();
-            sql.append("insert into IFLY_DOCUMENT");
-            sql.append("(nmrID,nmrName,interfaceName)");
-            sql.append("values(?,?,?)");
+            sql.append("insert into IFLY_MAPPING");
+            sql.append("(key,value)");
+            sql.append("values(?,?)");
 
             SQLiteStatement stat = db1.compileStatement(sql.toString());
             db1.beginTransaction();
-            for (DocumentDic info : list) {
-                stat.bindString(1, StringUtils.nullStrToEmpty(info.getNmrID()));
-                stat.bindString(2, StringUtils.nullStrToEmpty(info.getNmrName()));
-                stat.bindString(3, StringUtils.nullStrToEmpty(info.getInterfaceName()));
+            for (MappingInfo info : list) {
+                stat.bindString(1, StringUtils.nullStrToEmpty(info.getKey()));
+                stat.bindString(2, StringUtils.nullStrToEmpty(info.getValue()));
                 long result = stat.executeInsert();
                 if (result < 0) {
                     return false;
@@ -79,25 +78,25 @@ public class DocumentDicDao {
     }
 
     /**
-     * 根据文书名称获取文书信息
-     * @param nmrName
+     * 根据映射名称获取映射信息
+     * @param key
      * @return
      */
-    public DocumentDic getDocumentDic(String nmrName) {
-        DocumentDic documentDic = db.queryFrist(DocumentDic.class, "nmrName = ?", nmrName);
-        return documentDic;
+    public MappingInfo getMappingDic(String key) {
+        MappingInfo mappingInfo = db.queryFrist(MappingInfo.class, "key = ?", key);
+        return mappingInfo;
     }
 
 
 
     /**
-     * 获取所有文书信息
+     * 获取所有映射关系信息
      *
      * @return
      */
-    public List<DocumentDic> getDocumentDicList() {
-        List<DocumentDic> documentDics = db.queryList(DocumentDic.class, "", "");
-        return documentDics;
+    public List<MappingInfo> getMappingInfoList() {
+        List<MappingInfo> mappingInfos = db.queryList(MappingInfo.class, "", "");
+        return mappingInfos;
     }
 
 
@@ -107,10 +106,10 @@ public class DocumentDicDao {
      *
      * @return
      */
-    public boolean deleteDocumentDic() {
+    public boolean deleteMappingInfo() {
         Boolean result = false;
         try {
-            db.getDb().execSQL("delete from IFLY_DOCUMENT");
+            db.getDb().execSQL("delete from IFLY_MAPPING");
             result = true;
         } catch (Exception e) {
             return result;
@@ -126,7 +125,7 @@ public class DocumentDicDao {
      */
     public int countNum() {
         Cursor c = db.getDb().rawQuery(
-                "select count(*) from IFLY_DOCUMENT ",
+                "select count(*) from IFLY_MAPPING",
                 null);
         Integer count = 0;
         if (c.moveToNext()) {

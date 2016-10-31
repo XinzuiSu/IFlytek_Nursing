@@ -13,8 +13,8 @@ import com.iflytek.android.framework.db.DbHelper;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.medicalsdk_nursing.NursingListener;
-import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
+import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
 import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
@@ -58,6 +58,7 @@ public class IFlyNursing {
 
     /**
      * 单例化初始化sdk
+     *
      * @return
      */
     public static IFlyNursing getInstance() {
@@ -69,67 +70,77 @@ public class IFlyNursing {
 
     /**
      * 初始化sdk
+     *
      * @param context
      * @param appID
      */
-    public void initSDK(Context context, String appID){
+    public void initSDK(Context context, String appID) {
         this.mContext = context;
         init(context);
     }
 
+
     /**
      * 存储用户信息
+     *
      * @param userInfoStr
      */
-    public void saveUserInfo(String userInfoStr){
+    public void saveUserInfo(String userInfoStr) {
         gson = new Gson();
-        UserInfo userInfo = gson.fromJson(userInfoStr,UserInfo.class);
+        UserInfo userInfo = gson.fromJson(userInfoStr, UserInfo.class);
     }
 
 
     /**
      * 存储患者信息
+     *
      * @param patientStr
      */
-    public void savePatientInfo(String patientStr){
+    public void savePatientInfo(String patientStr) {
         PatientInfoDao patientInfoDao = new PatientInfoDao(mContext);
         gson = new Gson();
-        List<PatientInfo> patientInfoList = gson.fromJson(patientStr,new TypeToken<List<PatientInfo>>() {
+        List<PatientInfo> patientInfoList = gson.fromJson(patientStr, new TypeToken<List<PatientInfo>>() {
         }.getType());
         patientInfoDao.saveOrUpdatePaintInfoList(patientInfoList);
     }
 
     /**
      * 保存文书信息
+     *
      * @param documentStr
      */
-    public void saveDocumentInfo(String documentStr){
+    public void saveDocumentInfo(String documentStr) {
 
         DocumentDicDao documentDicDao = new DocumentDicDao(mContext);
         gson = new Gson();
-        List<DocumentDic> documentDicList = gson.fromJson(documentStr,new TypeToken<List<DocumentDic>>(){}.getType());
+        List<DocumentDic> documentDicList = gson.fromJson(documentStr, new TypeToken<List<DocumentDic>>() {
+        }.getType());
         documentDicDao.saveOrUpdateDocumentDicList(documentDicList);
     }
 
     /**
      * 保存文书详细信息
+     *
      * @param documentDetailStr
      */
-    public void saveDocumentDetailInfo(String documentDetailStr){
+    public void saveDocumentDetailInfo(String documentDetailStr) {
         DocumentDetailDicDao documentDetailDicDao = new DocumentDetailDicDao(mContext);
         gson = new Gson();
-        List<DocumentDetailDic> documentDetailDicList = gson.fromJson(documentDetailStr,new TypeToken<List<DocumentDetailDic>>(){}.getType());
+        List<DocumentDetailDic> documentDetailDicList = gson.fromJson(documentDetailStr, new TypeToken<List<DocumentDetailDic>>() {
+        }.getType());
         documentDetailDicDao.saveOrUpdateDocumentDetailDicList(documentDetailDicList);
     }
 
     /**
      * 保存选项信息
+     *
      * @param optionStr
      */
-    public void saveOptionInfo(String optionStr){
+    public void saveOptionInfo(String optionStr) {
         OptionDicDao optionDicDao = new OptionDicDao(mContext);
         gson = new Gson();
-        List<OptionDic> optionDics = gson.fromJson(optionStr,new TypeToken<List<OptionDic>>(){}.getType());
+        List<OptionDic> optionDics = gson.fromJson(optionStr, new TypeToken<List<OptionDic>>() {
+        }.getType());
         optionDicDao.saveOrUpdateOptionDicList(optionDics);
     }
 
@@ -138,7 +149,7 @@ public class IFlyNursing {
      */
     private void init(Context context) {
         openBluetooth(context);
-        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545"+ ",server_url= http://bj.voicecloud.cn/index.htm");
+        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://bj.voicecloud.cn/index.htm");
         initDataBase(context);
     }
 
@@ -159,7 +170,7 @@ public class IFlyNursing {
     /**
      * 开启蓝牙连接
      */
-    private  void openBluetooth(Context context) {
+    private void openBluetooth(Context context) {
 
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (!mAudioManager.isBluetoothScoAvailableOffCall()) {

@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_black"
             android:text="11床"
             />
 
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_black"
             android:text="张三"
             />
 
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_thi_gray"
+            android:textColor="@color/comm_black"
             android:text="女"
             />
 
@@ -47,6 +47,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColor="@color/comm_black"
             android:text="25"
             android:maxLines="1"
             />

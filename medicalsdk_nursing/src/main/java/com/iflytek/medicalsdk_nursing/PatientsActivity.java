@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -54,6 +55,8 @@ public class PatientsActivity extends Activity{
      */
     private int position;
 
+    private LinearLayout backLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,7 @@ public class PatientsActivity extends Activity{
         listView = (ListView) findViewById(R.id.patients_listView);
         editText = (EditText) findViewById(R.id.patients_search_edittext);
         searchText = (TextView) findViewById(R.id.patients_search_text);
+        backLayout = (LinearLayout) findViewById(R.id.patients_back);
         patientInfoDao = new PatientInfoDao(this);
         patientInfos = patientInfoDao.getPatientInfoList();
         listView.setAdapter(new PatientListAdapter(this,patientInfos));
@@ -72,6 +76,12 @@ public class PatientsActivity extends Activity{
                 intent.putExtra("PATIENT_BEDNO",patientInfos.get(i).getHosBedNum());
                 intent.putExtra("POSITION",position);
                 setResult(1002,intent);
+                finish();
+            }
+        });
+        backLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 finish();
             }
         });

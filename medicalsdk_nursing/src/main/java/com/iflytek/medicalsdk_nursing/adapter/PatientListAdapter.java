@@ -50,7 +50,7 @@ public class PatientListAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null){
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_record_instrument,null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_patient,null);
             viewHolder = new ViewHolder();
             viewHolder.bedNumberText = (TextView) convertView.findViewById(R.id.instrument_bedNumber);
             viewHolder.nameText = (TextView) convertView.findViewById(R.id.instrument_name);

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MedicalSDK_Nursing</string>
+    
+    <string-array name="mappingStr">
+        <item></item>
+
+
+    </string-array>
 </resources>

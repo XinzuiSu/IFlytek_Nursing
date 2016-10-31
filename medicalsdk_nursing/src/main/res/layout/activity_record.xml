@@ -34,9 +34,28 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             android:text="语音护理"
+            android:textColor="@color/comm_black"
             android:textSize="20sp"
             />
-        
+
+
+        <LinearLayout
+            android:id="@+id/record_save"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="保存"
+                android:textColor="#00cccb"
+                />
+
+        </LinearLayout>
     </RelativeLayout>
 
     <LinearLayout
@@ -79,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/record_time_layout"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         >
@@ -117,13 +136,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/record_divider_image"
-        android:layout_above="@+id/record_voice_image"
+        android:layout_above="@+id/record_divider_bottom"
         android:divider="@mipmap/list_divider"
         ></ListView>
 
     <ImageView
+        android:id="@+id/record_divider_bottom"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
+        android:layout_above="@+id/record_voice_image"
         android:background="#d1d1d1"
         />
 
@@ -131,7 +152,7 @@
     <com.iflytek.medicalsdk_nursing.GLWaveformView
         android:id="@+id/record_voice_image"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

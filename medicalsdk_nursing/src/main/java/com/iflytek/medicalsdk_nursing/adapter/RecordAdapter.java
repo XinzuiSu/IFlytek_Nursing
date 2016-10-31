@@ -73,7 +73,7 @@ public class RecordAdapter extends BaseAdapter{
             viewHolder.itemListView = (ListView) convertView.findViewById(R.id.instrument_listView);
         }
         BusinessDataInfo businessDataInfo = businessDataInfoList.get(position);
-        viewHolder.bedNumberText.setText(businessDataInfo.getBedNo());
+        viewHolder.bedNumberText.setText(businessDataInfo.getBedNo()+"床");
         if (StringUtils.isBlank(businessDataInfo.getPatName())){
             viewHolder.noDataText.setVisibility(View.VISIBLE);
             viewHolder.sexText.setVisibility(View.GONE);
@@ -98,7 +98,6 @@ public class RecordAdapter extends BaseAdapter{
 
             }
         });
-
         RecordContentAdapter recordContentAdapter = new RecordContentAdapter(mContext,businessDataInfo.getWsDataList());
         viewHolder.itemListView.setAdapter(recordContentAdapter);
         setListViewHeightBasedOnChildren(viewHolder.itemListView);

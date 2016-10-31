@@ -1,5 +1,6 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
+import com.google.gson.annotations.SerializedName;
 import com.iflytek.android.framework.db.Column;
 import com.iflytek.android.framework.db.Entity;
 
@@ -18,21 +19,19 @@ public class DocumentDic {
      * 文书编码
      */
     @Column
+    @SerializedName("Doc_Id")
     private String nmrID;
     /**
      * 文书名称
      */
     @Column
+    @SerializedName("Doc_Name")
     private String nmrName;
-    /**
-     * 护理工作项Id
-     */
-    @Column
-    private String workID;
     /**
      * 接口名称
      */
     @Column
+    @SerializedName("Interface_Name")
     private String interfaceName;
 
     public String getNmrID() {
@@ -51,13 +50,6 @@ public class DocumentDic {
         this.nmrName = nmrName;
     }
 
-    public String getWorkID() {
-        return workID;
-    }
-
-    public void setWorkID(String workID) {
-        this.workID = workID;
-    }
 
     public String getInterfaceName() {
         return interfaceName;
@@ -67,10 +59,9 @@ public class DocumentDic {
         this.interfaceName = interfaceName;
     }
 
-    public DocumentDic(String nmrID, String nmrName, String workID, String interfaceName) {
+    public DocumentDic(String nmrID, String nmrName, String interfaceName) {
         this.nmrID = nmrID;
         this.nmrName = nmrName;
-        this.workID = workID;
         this.interfaceName = interfaceName;
     }
 

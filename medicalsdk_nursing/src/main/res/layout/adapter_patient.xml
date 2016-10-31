@@ -13,14 +13,14 @@
         android:orientation="horizontal"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         >
         <TextView
             android:id="@+id/instrument_bedNumber"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_sec_gray"
+            android:textColor="@color/comm_black"
             android:text="11床"
             />
 
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_sec_gray"
+            android:textColor="@color/comm_black"
             android:text="张三"
             />
 
@@ -38,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="@color/comm_sec_gray"
+            android:textColor="@color/comm_black"
             android:text="女"
             />
 
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="25"
-            android:textColor="@color/comm_sec_gray"
+            android:textColor="@color/comm_black"
             android:maxLines="1"
             />
 

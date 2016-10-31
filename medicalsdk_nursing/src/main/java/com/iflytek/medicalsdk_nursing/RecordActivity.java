@@ -2,11 +2,14 @@ package com.iflytek.medicalsdk_nursing;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.iflytek.android.framework.util.StringUtils;
+import com.iflytek.android.framework.volley.Request;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechEvent;
 import com.iflytek.cloud.SpeechUnderstander;
@@ -28,6 +32,8 @@ import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
+import com.iflytek.medicalsdk_nursing.net.SoapResult;
+import com.iflytek.medicalsdk_nursing.net.VolleyTool;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,8 +41,10 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Title: com.iflytek.medicalsdk_nursing
@@ -77,6 +85,12 @@ public class RecordActivity extends Activity{
     private int position;
 
     private PatientInfoDao patientInfoDao;
+    /**
+     * 返回
+     */
+    private LinearLayout backLayout;
+
+    private LinearLayout saveLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +100,67 @@ public class RecordActivity extends Activity{
         spinner = (Spinner) findViewById(R.id.record_spinner);
         glWaveFormView = (GLWaveformView) findViewById(R.id.record_voice_image);
         timeText = (TextView) findViewById(R.id.recored_time_text);
+        backLayout = (LinearLayout) findViewById(R.id.record_back);
+        saveLayout = (LinearLayout) findViewById(R.id.record_save);
+        initView();
+
+        mSpeechUnderstander = new SpeechHelper(RecordActivity.this).getmSpeechUnderstander();
+        initData();
+        initVolley();
+    }
+
+    private void initVolley() {
+        VolleyTool vollTool = new VolleyTool(this) {
+            @Override
+            public void getRequest(int msgWhat, SoapResult result) throws JSONException, Exception {
+
+            }
+
+            @Override
+            public void onNetUnConnected() {
+
+            }
+
+            @Override
+            public void onErrorRequest(SoapResult result) throws Exception {
+
+            }
+        };
+        //获取轮播图地址
+        Map<String, String> dataMap = new HashMap<String, String>();
+        dataMap.put("hosId", "");
+        dataMap.put("updateTime", "");
+//        dataMap.put("updateTime", "111111111");
+        String list = CommUtil.changeJson(dataMap);
+
+//        String requestMethod = "GetNursingDocumentsList";
+//        String serverUrl = "http://192.168.1.117:8732/ws/NRService";
+////        volleyTool.sendJsonRequest(1004, false, new Gson().toJson(CommUtil.getRequestParam("S006", null)), Request
+////                .Method.POST, requestMethod, IPConfig.CONFIG_SERVER_IP);
+//        vollTool.sendJsonRequest(1004, false, null, Request
+//                .Method.GET, requestMethod, serverUrl);
+
+        //文书基本信息接口
+//        String requestMethod = "GetNursingDocumentMetaDataList";
+//        String serverUrl = "http://192.168.1.117:8732/ws/NRService";
+////        volleyTool.sendJsonRequest(1004, false, new Gson().toJson(CommUtil.getRequestParam("S006", null)), Request
+////                .Method.POST, requestMethod, IPConfig.CONFIG_SERVER_IP);
+//        vollTool.sendJsonRequest(1005, false, null, Request
+//                .Method.GET, requestMethod, serverUrl);
+
+
+        String requestMethod = "GetNursingDocumentCodeItemList";
+        String serverUrl = "http://192.168.1.117:8732/ws/NRService";
+//        volleyTool.sendJsonRequest(1004, false, new Gson().toJson(CommUtil.getRequestParam("S006", null)), Request
+//                .Method.POST, requestMethod, IPConfig.CONFIG_SERVER_IP);
+        vollTool.sendJsonRequest(1006, false, null, Request
+                .Method.GET, requestMethod, serverUrl);
+    }
+
+    /**
+     * 初始化view
+     */
+    private void initView(){
         timeText.setText(getDate());
         // 建立数据源
         String[] mItems = {"入院评估","体温单"};
@@ -95,6 +170,13 @@ public class RecordActivity extends Activity{
         //绑定 Adapter到控件
         spinner.setAdapter(adapter);
         glWaveFormView.init();
+        Display display = getWindowManager().getDefaultDisplay(); //Activity#getWindowManager()
+        Point size = new Point(); display.getSize(size);
+        int width = size.x;
+//        int height = size.y;
+//        Log.d("SCREAN_X_Y",width+"------"+height);
+        float circleRadius = width*80.0f/1080;
+        glWaveFormView.setCircleRadius(circleRadius);
 
         glWaveFormView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +185,33 @@ public class RecordActivity extends Activity{
                 speech();
             }
         });
+        backLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        saveLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveRecordInfo();
+            }
+        });
+    }
 
-        mSpeechUnderstander = new SpeechHelper(RecordActivity.this).getmSpeechUnderstander();
+    /**
+     * 保存护理记录数据
+     */
+    private void saveRecordInfo() {
+
+
+    }
+
+
+    /**
+     * 初始化数据
+     */
+    private void initData(){
         PatientInfo patientInfo = new PatientInfo("0480392","04803921","221","0233154","1","1000654","5","张三","1989-09-21","男","11","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
         PatientInfo patientInfo2 = new PatientInfo("0480393","04803922","222","0233155","1","1000654","5","李四","1989-09-21","男","12","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
         PatientInfo patientInfo3 = new PatientInfo("0480394","04803923","223","0233156","1","1000654","5","王石泉","1989-09-21","男","13","00023","内科一病区","5646","中级","住院","2014-03-22","2014-06-11","123123","内科");
@@ -124,8 +231,8 @@ public class RecordActivity extends Activity{
         String patientStr = new Gson().toJson(patientInfos);
         Log.d("PATIENT",patientStr);
 
-        DocumentDic documentDic = new DocumentDic("1001","入院评估单","A0002","");
-        DocumentDic documentDic2 = new DocumentDic("1002","体温单","B0002","");
+        DocumentDic documentDic = new DocumentDic("1001","入院评估单","");
+        DocumentDic documentDic2 = new DocumentDic("1002","体温单","");
         List<DocumentDic> documentDics = new ArrayList<>();
         documentDics.add(documentDic);
         documentDics.add(documentDic2);
@@ -188,7 +295,6 @@ public class RecordActivity extends Activity{
         recordAdapter = new RecordAdapter(RecordActivity.this,businessDataInfoList);
         listView.setAdapter(recordAdapter);
         position = businessDataInfoList.size()-1;
-
     }
 
 
@@ -218,13 +324,15 @@ public class RecordActivity extends Activity{
         @Override
         public void onResult(final UnderstanderResult result) {
             glWaveFormView.reset();
-            BusinessDataInfo businessDataInfo = businessDataInfoList.get(position);
+            BusinessDataInfo businessDataInfo;
+            List<WSData> wsDataList = new ArrayList<>();
             JSONObject jsonObject;
             String service;
             String key = "";
             String value = "";
             String name = "";
             String bed = "";
+            String type = "";
             try {
                 jsonObject = new JSONObject(result.getResultString());
                 service = jsonObject.optString("service");
@@ -232,17 +340,29 @@ public class RecordActivity extends Activity{
                 if (semanticObject != null){
                     JSONObject slotsObject = semanticObject.optJSONObject("slots");
                     Iterator<String> iterator = slotsObject.keys();
-                    key = iterator.next();
-                    value = slotsObject.optString(key);
                     bed = slotsObject.optString("bed");
+                    type = slotsObject.optString("type");
+                    //遍历结果
+                    while (iterator.hasNext()){
+                        key = iterator.next();
+                        value = slotsObject.optString(key);
+                        if (StringUtils.isEquals(key,"type")||StringUtils.isEquals(key,"bed")){
+                            break;
+                        }
+                        WSData wsData = new WSData();
+                        wsData.setWsName(key);
+                        wsData.setWsValue(value);
+                        wsDataList.add(wsData);
+                    }
                 }
                 //护理业务
                 if (StringUtils.isEquals(service,"nursing")){
-                    if (StringUtils.isEquals(key,"type")){
+                    if (StringUtils.isNotBlank(type)){
                         //切换种类
-                        return;
 
-                    }else if (StringUtils.isEquals(key,"bed")){
+
+                    }
+                    if (StringUtils.isNotBlank(bed)){
                         BusinessDataInfo busInfo = null;
                         int i = 0;
                         for (BusinessDataInfo info:businessDataInfoList){
@@ -268,13 +388,12 @@ public class RecordActivity extends Activity{
                         }else {
                             position = i;
                             listView.setSelection(position);
-                            return;
                         }
-                    }else {
-                        WSData wsData = new WSData();
-                        wsData.setWsName(key);
-                        wsData.setWsValue(value);
-                        businessDataInfo.getWsDataList().add(wsData);
+                    }
+
+                    if (wsDataList != null){
+                        businessDataInfo = businessDataInfoList.get(position);
+                        businessDataInfo.getWsDataList().addAll(wsDataList);
                         businessDataInfoList.set(position,businessDataInfo);
                     }
                 }else {
@@ -327,11 +446,6 @@ public class RecordActivity extends Activity{
             	}
         }
     };
-
-    private void transBed() {
-
-
-    }
 
 
     private void showTip(String text){
@@ -388,6 +502,8 @@ public class RecordActivity extends Activity{
 
         }
     }
+
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

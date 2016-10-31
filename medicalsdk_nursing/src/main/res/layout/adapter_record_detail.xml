@@ -9,6 +9,7 @@
         android:orientation="horizontal"
         android:paddingBottom="10dp"
         android:paddingTop="10dp"
+        android:layout_marginLeft="20dp"
         >
         <TextView
             android:id="@+id/detail_item_name"
@@ -17,7 +18,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="体温："
-            android:layout_marginLeft="10dp"
+            android:textColor="@color/comm_gray"
             />
 
         <TextView
@@ -27,6 +28,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="13"
+            android:textColor="@color/comm_gray"
             />
 
         <TextView
@@ -34,6 +36,7 @@
             android:layout_weight="8"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:text="℃"
             />
     </LinearLayout>

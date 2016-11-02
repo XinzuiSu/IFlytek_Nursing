@@ -1,5 +1,6 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
+import com.google.gson.annotations.SerializedName;
 import com.iflytek.android.framework.db.Column;
 import com.iflytek.android.framework.db.Entity;
 
@@ -18,26 +19,31 @@ public class DocumentDetailDic {
      * 文书编码
      */
     @Column
+    @SerializedName("Doc_Id")
     private String nmrID;
     /**
      * 项目编码
      */
     @Column
+    @SerializedName("Item_Id")
     private String itemID;
     /**
      * 项目名称
      */
     @Column
+    @SerializedName("Item_Name")
     private String itemName;
     /**
      * 项目类型
      */
     @Column
+    @SerializedName("Item_Type")
     private String itemType;
     /**
      * 数据代码
      */
     @Column
+    @SerializedName("Code_Id")
     private String codeID;
 
     public String getNmrID() {

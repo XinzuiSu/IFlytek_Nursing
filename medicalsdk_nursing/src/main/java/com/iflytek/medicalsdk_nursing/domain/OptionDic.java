@@ -1,5 +1,6 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
+import com.google.gson.annotations.SerializedName;
 import com.iflytek.android.framework.db.Column;
 import com.iflytek.android.framework.db.Entity;
 
@@ -18,21 +19,25 @@ public class OptionDic {
      * 数据代码
      */
     @Column
+    @SerializedName("Code_Id")
     private String codeID;
     /**
      * 选项编码
      */
     @Column
+    @SerializedName("Opt_Code")
     private String optCode;
     /**
      * 选项名称
      */
     @Column
+    @SerializedName("Opt_Name")
     private String optName;
     /**
      * 父级代码
      */
     @Column
+    @SerializedName("Parent_Opt")
     private String parentOpt;
 
     public String getCodeID() {

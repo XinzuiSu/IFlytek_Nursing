@@ -48,6 +48,8 @@ public class IFlyNursing {
 
     private NursingListener nursingListener;
 
+    private String[] times;
+
     public NursingListener getNursingListener() {
         return nursingListener;
     }
@@ -129,6 +131,11 @@ public class IFlyNursing {
         List<DocumentDetailDic> documentDetailDicList = gson.fromJson(documentDetailStr, new TypeToken<List<DocumentDetailDic>>() {
         }.getType());
         documentDetailDicDao.saveOrUpdateDocumentDetailDicList(documentDetailDicList);
+    }
+
+    public void saveTimeInfo(String timeStr){
+        timeStr = "3,7,11,15,19,23";
+        times = timeStr.split(",");
     }
 
     /**

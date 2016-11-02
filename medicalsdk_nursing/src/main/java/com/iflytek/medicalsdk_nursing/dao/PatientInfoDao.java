@@ -46,31 +46,19 @@ public class PatientInfoDao {
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("insert into IFLY_PATIENT");
-            sql.append("(patID,hosID,binganID,outpatientNo,babyTg,connectHosID,hosCount,patName,patBirth,patSex,hosBedNum,areaCode,areaName,nurLevelCode,nurLevelName,patHosStatus,patHosDateIn,getPatHosDateOut,dptCode,dptName)");
+            sql.append("(age,cwdm,hzxm,patid,sex,syxh,yexh)");
             sql.append("values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
             SQLiteStatement stat = db1.compileStatement(sql.toString());
             db1.beginTransaction();
             for (PatientInfo info : list) {
-                stat.bindString(1, StringUtils.nullStrToEmpty(info.getPatID()));
-                stat.bindString(2, StringUtils.nullStrToEmpty(info.getHosID()));
-                stat.bindString(3, StringUtils.nullStrToEmpty(info.getBinganID()));
-                stat.bindString(4, StringUtils.nullStrToEmpty(info.getOutpatientNo()));
-                stat.bindString(5, StringUtils.nullStrToEmpty(info.getBabyTg()));
-                stat.bindString(6, StringUtils.nullStrToEmpty(info.getConnectHosID()));
-                stat.bindString(7, StringUtils.nullStrToEmpty(info.getHosCount()));
-                stat.bindString(8, StringUtils.nullStrToEmpty(info.getPatName()));
-                stat.bindString(9, StringUtils.nullStrToEmpty(info.getPatBirth()));
-                stat.bindString(10, StringUtils.nullStrToEmpty(info.getPatSex()));
-                stat.bindString(11, StringUtils.nullStrToEmpty(info.getHosBedNum()));
-                stat.bindString(12, StringUtils.nullStrToEmpty(info.getAreaCode()));
-                stat.bindString(13, StringUtils.nullStrToEmpty(info.getAreaName()));
-                stat.bindString(14, StringUtils.nullStrToEmpty(info.getNurLevelCode()));
-                stat.bindString(15, StringUtils.nullStrToEmpty(info.getNurLevelName()));
-                stat.bindString(16, StringUtils.nullStrToEmpty(info.getPatHosStatus()));
-                stat.bindString(17, StringUtils.nullStrToEmpty(info.getGetPatHosDateOut()));
-                stat.bindString(18, StringUtils.nullStrToEmpty(info.getDptCode()));
-                stat.bindString(19, StringUtils.nullStrToEmpty(info.getDptName()));
+                stat.bindString(1, StringUtils.nullStrToEmpty(info.getAge()));
+                stat.bindString(2, StringUtils.nullStrToEmpty(info.getCwdm()));
+                stat.bindString(3, StringUtils.nullStrToEmpty(info.getHzxm()));
+                stat.bindString(4, StringUtils.nullStrToEmpty(info.getPatid()));
+                stat.bindString(5, StringUtils.nullStrToEmpty(info.getSex()));
+                stat.bindString(6, StringUtils.nullStrToEmpty(info.getSyxh()));
+                stat.bindString(7, StringUtils.nullStrToEmpty(info.getYexh()));
                 long result = stat.executeInsert();
                 if (result < 0) {
                     return false;
@@ -100,7 +88,7 @@ public class PatientInfoDao {
      * @return
      */
     public PatientInfo getPatientInfo(String bedNo) {
-        PatientInfo patientInfo = db.queryFrist(PatientInfo.class, "hosBedNum = ?", bedNo);
+        PatientInfo patientInfo = db.queryFrist(PatientInfo.class, "cwdm = ?", bedNo);
         return patientInfo;
     }
 
@@ -122,7 +110,7 @@ public class PatientInfoDao {
      * @return
      */
     public List<PatientInfo> getPatientInfoList(String searchText) {
-        List<PatientInfo> patientInfos = db.queryList(PatientInfo.class, ":hosBedNum like ? or :patName like ?", "%"+searchText+"%","%"+searchText+"%");
+        List<PatientInfo> patientInfos = db.queryList(PatientInfo.class, ":cwdm like ? or :hzxm like ?", "%"+searchText+"%","%"+searchText+"%");
         return patientInfos;
     }
 

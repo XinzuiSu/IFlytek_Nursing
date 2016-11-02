@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">MedicalSDK_Nursing</string>
     
-    <string-array name="mappingStr">
-        <item></item>
-
-
+    <string-array name="type">
+        <item>体温单</item>
+        <item>新通用入院评估</item>
+        <item>儿科入院评估</item>
+        <item>产科入院评估</item>
+        <item>新生儿入院评估</item>
     </string-array>
 </resources>

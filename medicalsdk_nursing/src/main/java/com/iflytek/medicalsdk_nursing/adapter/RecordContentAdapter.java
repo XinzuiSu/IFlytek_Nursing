@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.iflytek.medicalsdk_nursing.R;
-import com.iflytek.medicalsdk_nursing.dao.MappingDao;
-import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
 
 import java.text.SimpleDateFormat;
@@ -27,13 +25,11 @@ public class RecordContentAdapter extends BaseAdapter{
 
     private SimpleDateFormat simpleDateFormat;
 
-    private MappingDao mappingDao;
 
     public RecordContentAdapter(Context context, List<WSData> wsDatas){
         this.wsDataList = wsDatas;
         this.mContext = context;
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        mappingDao = new MappingDao(mContext);
     }
 
     @Override
@@ -65,12 +61,9 @@ public class RecordContentAdapter extends BaseAdapter{
             viewHolder = (ViewHolder) convertView.getTag();
         }
         WSData wsData = wsDataList.get(position);
-        MappingInfo mappingInfo = mappingDao.getMappingDic(wsData.getWsName());
-        if (mappingInfo!=null){
-            viewHolder.nameText.setText(mappingInfo.getValue());
-        }else {
-            viewHolder.nameText.setText(wsData.getWsName());
-        }
+
+        viewHolder.nameText.setText(wsData.getWsName());
+
         viewHolder.valueText.setText(wsData.getWsValue());
         return convertView;
     }

@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteStatement;
 import com.iflytek.android.framework.db.DbHelper;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
-import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 
@@ -109,10 +108,10 @@ public class OptionDicDao {
      *
      * @return
      */
-    public boolean deleteDocumentDic() {
+    public boolean deleteOptionDic() {
         Boolean result = false;
         try {
-            db.getDb().execSQL("delete from IFLY_DOCUMENT");
+            db.getDb().execSQL("delete from IFLY_OPTION");
             result = true;
         } catch (Exception e) {
             return result;
@@ -128,7 +127,7 @@ public class OptionDicDao {
      */
     public int countNum() {
         Cursor c = db.getDb().rawQuery(
-                "select count(*) from IFLY_DOCUMENT ",
+                "select count(*) from IFLY_OPTION ",
                 null);
         Integer count = 0;
         if (c.moveToNext()) {

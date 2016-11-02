@@ -91,9 +91,9 @@ public abstract class VolleyTool implements Handler.Callback {
     public abstract void onErrorRequest(SoapResult result) throws Exception;
 
 
-
     /**
      * 发送Json请求（IP自配--针对特殊服务情况）
+     *
      * @param msgWhat
      * @param isShowDialog
      * @param paramsMap
@@ -101,7 +101,7 @@ public abstract class VolleyTool implements Handler.Callback {
      * @param method
      * @param serverIP
      */
-    public void sendJsonRequest(final int msgWhat, final boolean isShowDialog, String paramsMap, int requestMethod, final String method,String serverIP) {
+    public void sendJsonRequest(final int msgWhat, final boolean isShowDialog, String paramsMap, int requestMethod, final String method, String serverIP) {
         final SoapResult soapResult = new SoapResult();
         //默认获取数据为true
         soapResult.setFlag(true);
@@ -111,9 +111,9 @@ public abstract class VolleyTool implements Handler.Callback {
             return;
         }
 
-        String requestUrl = serverIP+"/"+method;
-        Log.d("Request","请求地址:"+requestUrl);
-        Log.d("Request","请求参数:"+paramsMap);
+        String requestUrl = serverIP + "/" + method;
+        Log.d("Request", "请求地址:" + requestUrl);
+        Log.d("Request", "请求参数:" + paramsMap);
 
 //        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestMethod, requestUrl, paramsMap, new Response.Listener<JSONObject>() {
 //            @Override
@@ -150,7 +150,13 @@ public abstract class VolleyTool implements Handler.Callback {
         StringRequest stringRequest = new StringRequest(requestMethod, requestUrl, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                Log.d("Request","请求结果："+s.toString());
+
+                String resultStr = s.replace("\\", "");
+// 处理完成后赋值回去
+                resultStr = resultStr.substring(1,resultStr.length() - 1);
+//                s.replace("\\","");
+                Log.d("Request", "请求结果：" + resultStr.toString());
+                soapResult.setData(String.valueOf(resultStr));
                 msg = Message.obtain();
                 msg.what = msgWhat;
                 msg.obj = soapResult;
@@ -161,14 +167,12 @@ public abstract class VolleyTool implements Handler.Callback {
             public void onErrorResponse(VolleyError volleyError) {
                 volleyError.printStackTrace();
                 Log.e("ERROR", volleyError.getMessage() + volleyError.getStackTrace());
-
-
                 msg = Message.obtain();
                 msg.what = msgWhat;
                 msg.obj = soapResult;
                 handler.sendMessage(msg);
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
@@ -184,7 +188,7 @@ public abstract class VolleyTool implements Handler.Callback {
         stringRequest.setRetryPolicy(retryPolicy);
         stringRequest.setTag(mContext.getClass().getSimpleName());
         SingleRequestQueen.getInstance(mContext).getRequestQueue().add(stringRequest);
-
+//
     }
 
 

@@ -12,7 +12,7 @@ import com.iflytek.android.framework.volley.Response;
 import com.iflytek.android.framework.volley.RetryPolicy;
 import com.iflytek.android.framework.volley.VolleyError;
 import com.iflytek.android.framework.volley.toolbox.StringRequest;
-import com.iflytek.medicalsdk_nursing.CommUtil;
+import com.iflytek.medicalsdk_nursing.util.CommUtil;
 
 import org.json.JSONException;
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -12,9 +13,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.iflytek.android.framework.util.StringUtils;
-import com.iflytek.medicalsdk_nursing.PatientsActivity;
+import com.iflytek.medicalsdk_nursing.view.PatientsActivity;
 import com.iflytek.medicalsdk_nursing.R;
-import com.iflytek.medicalsdk_nursing.RecordActivity;
+import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ import java.util.List;
  * Created by chenzhilei on 2016/10/19.
  */
 
-public class RecordAdapter extends BaseAdapter{
+public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClickListener{
 
     private List<BusinessDataInfo> businessDataInfoList;
 
@@ -73,7 +74,7 @@ public class RecordAdapter extends BaseAdapter{
             viewHolder.itemListView = (ListView) convertView.findViewById(R.id.instrument_listView);
         }
         BusinessDataInfo businessDataInfo = businessDataInfoList.get(position);
-        viewHolder.bedNumberText.setText(businessDataInfo.getBedNo()+"床");
+        viewHolder.bedNumberText.setText(StringUtils.isNotBlank(businessDataInfo.getBedNo())?businessDataInfo.getBedNo()+"床":"无");
         if (StringUtils.isBlank(businessDataInfo.getPatName())){
             viewHolder.noDataText.setVisibility(View.VISIBLE);
             viewHolder.sexText.setVisibility(View.GONE);
@@ -98,7 +99,7 @@ public class RecordAdapter extends BaseAdapter{
 
             }
         });
-        RecordContentAdapter recordContentAdapter = new RecordContentAdapter(mContext,businessDataInfo.getWsDataList());
+        RecordContentAdapter recordContentAdapter = new RecordContentAdapter(mContext,businessDataInfo.getWsDataList(),position);
         viewHolder.itemListView.setAdapter(recordContentAdapter);
         setListViewHeightBasedOnChildren(viewHolder.itemListView);
         return convertView;
@@ -128,6 +129,11 @@ public class RecordAdapter extends BaseAdapter{
     public void updateList(List<BusinessDataInfo> businessDataInfos){
         this.businessDataInfoList = businessDataInfos;
         this.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
     }
 
     static class ViewHolder{

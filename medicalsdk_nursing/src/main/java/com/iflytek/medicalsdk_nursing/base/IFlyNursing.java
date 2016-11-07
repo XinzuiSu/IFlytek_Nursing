@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import com.iflytek.android.framework.db.DbHelper;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
-import com.iflytek.medicalsdk_nursing.NursingListener;
+import com.iflytek.medicalsdk_nursing.util.NursingListener;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
@@ -79,6 +79,7 @@ public class IFlyNursing {
     public void initSDK(Context context, String appID) {
         this.mContext = context;
         init(context);
+        saveTimeInfo("");
     }
 
 
@@ -92,6 +93,9 @@ public class IFlyNursing {
         UserInfo userInfo = gson.fromJson(userInfoStr, UserInfo.class);
     }
 
+    public String[] getTimes() {
+        return times;
+    }
 
     /**
      * 存储患者信息

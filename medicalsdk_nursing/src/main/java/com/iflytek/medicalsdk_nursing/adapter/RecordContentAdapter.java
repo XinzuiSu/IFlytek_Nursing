@@ -5,9 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.R;
+import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
 
 import java.text.SimpleDateFormat;
@@ -25,11 +28,17 @@ public class RecordContentAdapter extends BaseAdapter{
 
     private SimpleDateFormat simpleDateFormat;
 
+    private int groupID;
 
-    public RecordContentAdapter(Context context, List<WSData> wsDatas){
+    private RecordActivity recordActivity;
+
+
+    public RecordContentAdapter(Context context, List<WSData> wsDatas , int groupID){
         this.wsDataList = wsDatas;
         this.mContext = context;
+        this.recordActivity = (RecordActivity) context;
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.groupID = groupID;
     }
 
     @Override
@@ -48,14 +57,14 @@ public class RecordContentAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         if (convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_record_detail,null);
             viewHolder = new ViewHolder();
             viewHolder.nameText = (TextView) convertView.findViewById(R.id.detail_item_name);
             viewHolder.valueText = (TextView) convertView.findViewById(R.id.detail_item_value);
-            viewHolder.unitText = (TextView) convertView.findViewById(R.id.detail_item_unit);
+            viewHolder.deleteLayout = (LinearLayout) convertView.findViewById(R.id.detail_item_delete);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -63,8 +72,17 @@ public class RecordContentAdapter extends BaseAdapter{
         WSData wsData = wsDataList.get(position);
 
         viewHolder.nameText.setText(wsData.getWsName());
-
-        viewHolder.valueText.setText(wsData.getWsValue());
+        if (StringUtils.isNotBlank(wsData.getWsValueCaption())){
+            viewHolder.valueText.setText(wsData.getWsValueCaption());
+        }else {
+            viewHolder.valueText.setText(wsData.getWsValue());
+        }
+        viewHolder.deleteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordActivity.delete(groupID,position);
+            }
+        });
         return convertView;
     }
 
@@ -78,8 +96,8 @@ public class RecordContentAdapter extends BaseAdapter{
          */
         private TextView valueText;
         /**
-         * 单位
+         * 删除
          */
-        private TextView unitText;
+        private LinearLayout deleteLayout;
     }
 }

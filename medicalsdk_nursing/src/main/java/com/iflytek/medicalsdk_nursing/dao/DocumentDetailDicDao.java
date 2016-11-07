@@ -104,6 +104,17 @@ public class DocumentDetailDicDao {
     }
 
 
+    /**
+     * 根据项目编号获取所有项目信息
+     *
+     * @return
+     */
+    public List<DocumentDetailDic> getItemDicList() {
+        List<DocumentDetailDic> documentDetailDics = db.queryList(DocumentDetailDic.class, "", "");
+        return documentDetailDics;
+    }
+
+
 
     /**
      * 清空项目数据

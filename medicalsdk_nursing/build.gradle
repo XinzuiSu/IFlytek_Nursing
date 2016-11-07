@@ -26,4 +26,5 @@ dependencies {
     compile files('libs/Sunflower.jar')
     compile files('libs/mobileX-base.jar')
     compile files('libs/gson-2.2.4.jar')
+    compile files('libs/AndroidSwipeLayout-v1.1.8.jar')
 }

@@ -1,4 +1,4 @@
-package com.iflytek.medicalsdk_nursing;
+package com.iflytek.medicalsdk_nursing.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.iflytek.medicalsdk_nursing.R;
 
 /**
  * 语音动画效果

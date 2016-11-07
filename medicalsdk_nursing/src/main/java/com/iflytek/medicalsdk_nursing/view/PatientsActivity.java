@@ -1,4 +1,4 @@
-package com.iflytek.medicalsdk_nursing;
+package com.iflytek.medicalsdk_nursing.view;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.iflytek.android.framework.util.StringUtils;
+import com.iflytek.medicalsdk_nursing.R;
 import com.iflytek.medicalsdk_nursing.adapter.PatientListAdapter;
 import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
@@ -73,7 +74,7 @@ public class PatientsActivity extends Activity{
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent();
-                intent.putExtra("PATIENT_BEDNO",patientInfos.get(i).getHosBedNum());
+                intent.putExtra("PATIENT_BEDNO",patientInfos.get(i).getCwdm());
                 intent.putExtra("POSITION",position);
                 setResult(1002,intent);
                 finish();

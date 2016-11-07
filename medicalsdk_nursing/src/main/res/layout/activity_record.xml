@@ -149,7 +149,7 @@
         />
 
 
-    <com.iflytek.medicalsdk_nursing.GLWaveformView
+    <com.iflytek.medicalsdk_nursing.util.GLWaveformView
         android:id="@+id/record_voice_image"
         android:layout_width="match_parent"
         android:layout_height="80dp"

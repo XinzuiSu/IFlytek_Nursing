@@ -1,4 +1,4 @@
-package com.iflytek.medicalsdk_nursing;
+package com.iflytek.medicalsdk_nursing.util;
 
 /**
  * @Title: com.iflytek.medicalsdk_nursing

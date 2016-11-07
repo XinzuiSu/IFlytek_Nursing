@@ -1,4 +1,4 @@
-package com.iflytek.medicalsdk_nursing;
+package com.iflytek.medicalsdk_nursing.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
 import com.iflytek.medicalsdk_nursing.dao.MappingDao;
 import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
+import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 
 import java.util.List;
 

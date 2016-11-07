@@ -47,7 +47,7 @@ public class PatientInfoDao {
             StringBuilder sql = new StringBuilder();
             sql.append("insert into IFLY_PATIENT");
             sql.append("(age,cwdm,hzxm,patid,sex,syxh,yexh)");
-            sql.append("values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            sql.append("values(?,?,?,?,?,?,?)");
 
             SQLiteStatement stat = db1.compileStatement(sql.toString());
             db1.beginTransaction();

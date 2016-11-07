@@ -7,4 +7,7 @@
     <color name="comm_thi_gray">#999999</color>
     <color name="speech_blue">#0b69a4</color>
     <color name="text_blue">#6fd0f4</color>
+    <color name="green">#00cccb</color>
+    <color name="red">#ef3737</color>
+    <color name="white">#FFFFFF</color>
 </resources>

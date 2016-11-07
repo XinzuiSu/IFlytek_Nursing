@@ -61,10 +61,10 @@ public class PatientListAdapter extends BaseAdapter{
             viewHolder = (ViewHolder) convertView.getTag();
         }
         PatientInfo patientInfo = patientInfoList.get(position);
-        viewHolder.bedNumberText.setText(patientInfo.getHosBedNum()+"床");
-        viewHolder.nameText.setText(patientInfo.getPatName());
-        viewHolder.sexText.setText(patientInfo.getPatSex());
-        viewHolder.ageText.setText(patientInfo.getPatBirth());
+        viewHolder.bedNumberText.setText(patientInfo.getCwdm()+"床");
+        viewHolder.nameText.setText(patientInfo.getHzxm());
+        viewHolder.sexText.setText(patientInfo.getSex());
+        viewHolder.ageText.setText(patientInfo.getAge());
         return convertView;
     }
 

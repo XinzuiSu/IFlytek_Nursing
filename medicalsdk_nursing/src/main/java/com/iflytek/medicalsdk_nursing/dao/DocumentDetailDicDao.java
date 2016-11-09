@@ -47,8 +47,8 @@ public class DocumentDetailDicDao {
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("insert into IFLY_DOCUMENT_DETAIL");
-            sql.append("(nmrID,itemID,itemName,itemType,codeID)");
-            sql.append("values(?,?,?,?,?)");
+            sql.append("(nmrID,itemID,itemName,itemType,codeID,controlType)");
+            sql.append("values(?,?,?,?,?,?)");
 
             SQLiteStatement stat = db1.compileStatement(sql.toString());
             db1.beginTransaction();
@@ -58,6 +58,7 @@ public class DocumentDetailDicDao {
                 stat.bindString(3, StringUtils.nullStrToEmpty(info.getItemName()));
                 stat.bindString(4, StringUtils.nullStrToEmpty(info.getItemType()));
                 stat.bindString(5, StringUtils.nullStrToEmpty(info.getCodeID()));
+                stat.bindString(6, StringUtils.nullStrToEmpty(info.getControlType()));
 
                 long result = stat.executeInsert();
                 if (result < 0) {

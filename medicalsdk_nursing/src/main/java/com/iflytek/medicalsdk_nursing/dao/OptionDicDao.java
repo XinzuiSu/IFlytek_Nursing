@@ -84,8 +84,8 @@ public class OptionDicDao {
      * @param optName
      * @return
      */
-    public OptionDic getOptionDic(String optName) {
-        OptionDic optionDic = db.queryFrist(OptionDic.class, "optName = ?", optName);
+    public OptionDic getOptionDic(String codeID,String optName) {
+        OptionDic optionDic = db.queryFrist(OptionDic.class, "codeID = ? and optName = ?", codeID,optName);
         return optionDic;
     }
 

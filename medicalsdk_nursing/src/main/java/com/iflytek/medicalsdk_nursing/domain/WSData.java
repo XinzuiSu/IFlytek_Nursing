@@ -1,6 +1,5 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
-import java.util.List;
 
 /**
  * @Title: com.iflytek.medicalsdk_nursing.domain
@@ -15,60 +14,60 @@ public class WSData {
     /**
      * 代码
      */
-    private String wsID;
+    private String ID;
 
     /**
      * 名称
      */
-    private String wsName;
+    private String Name;
 
     /**
      * 值
      */
-    private String wsValue;
+    private String Value;
 
     /**
      * 代码项描述
      */
-    private String wsValueCaption;
+    private String ValueCaption;
 
-    public String getWsID() {
-        return wsID;
+    public String getID() {
+        return ID;
     }
 
-    public void setWsID(String wsID) {
-        this.wsID = wsID;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
-    public String getWsName() {
-        return wsName;
+    public String getName() {
+        return Name;
     }
 
-    public void setWsName(String wsName) {
-        this.wsName = wsName;
+    public void setName(String name) {
+        this.Name = name;
     }
 
-    public String getWsValue() {
-        return wsValue;
+    public String getValue() {
+        return Value;
     }
 
-    public void setWsValue(String wsValue) {
-        this.wsValue = wsValue;
+    public void setValue(String value) {
+        this.Value = value;
     }
 
-    public String getWsValueCaption() {
-        return wsValueCaption;
+    public String getValueCaption() {
+        return ValueCaption;
     }
 
-    public void setWsValueCaption(String wsValueCaption) {
-        this.wsValueCaption = wsValueCaption;
+    public void setValueCaption(String valueCaption) {
+        this.ValueCaption = valueCaption;
     }
 
-    public WSData(String wsID, String wsName, String wsValue, String wsValueCaption) {
-        this.wsID = wsID;
-        this.wsName = wsName;
-        this.wsValue = wsValue;
-        this.wsValueCaption = wsValueCaption;
+    public WSData(String ID, String Name, String Value, String ValueCaption) {
+        this.ID = ID;
+        this.Name = Name;
+        this.Value = Value;
+        this.ValueCaption = ValueCaption;
     }
 
     public WSData() {

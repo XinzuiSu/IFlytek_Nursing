@@ -71,11 +71,11 @@ public class RecordContentAdapter extends BaseAdapter{
         }
         WSData wsData = wsDataList.get(position);
 
-        viewHolder.nameText.setText(wsData.getWsName());
-        if (StringUtils.isNotBlank(wsData.getWsValueCaption())){
-            viewHolder.valueText.setText(wsData.getWsValueCaption());
+        viewHolder.nameText.setText(wsData.getName());
+        if (StringUtils.isNotBlank(wsData.getValueCaption())){
+            viewHolder.valueText.setText(wsData.getValueCaption());
         }else {
-            viewHolder.valueText.setText(wsData.getWsValue());
+            viewHolder.valueText.setText(wsData.getValue());
         }
         viewHolder.deleteLayout.setOnClickListener(new View.OnClickListener() {
             @Override

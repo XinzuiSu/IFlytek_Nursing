@@ -25,13 +25,15 @@ import java.util.List;
  * Created by chenzhilei on 2016/10/19.
  */
 
-public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClickListener{
+public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClickListener,AdapterView.OnItemSelectedListener{
 
     private List<BusinessDataInfo> businessDataInfoList;
 
     private Context mContext;
 
     private SimpleDateFormat simpleDateFormat;
+
+    private ViewHolder viewHolder;
 
     public RecordAdapter(Context context, List<BusinessDataInfo> businessDataInfos){
         this.businessDataInfoList = businessDataInfos;
@@ -56,7 +58,6 @@ public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClic
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
         if (convertView == null){
             convertView = LayoutInflater.from(mContext).inflate(R.layout.adapter_record_instrument,null);
             viewHolder = new ViewHolder();
@@ -133,6 +134,16 @@ public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        viewHolder.itemListView.setSelection(businessDataInfoList.get(i).getWsDataList().size());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
 

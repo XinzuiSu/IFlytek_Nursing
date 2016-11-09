@@ -46,6 +46,10 @@ public class DocumentDetailDic {
     @SerializedName("Code_Id")
     private String codeID;
 
+    @Column
+    @SerializedName("Control_Type")
+    private String controlType;
+
     public String getNmrID() {
         return nmrID;
     }
@@ -84,6 +88,14 @@ public class DocumentDetailDic {
 
     public void setCodeID(String codeID) {
         this.codeID = codeID;
+    }
+
+    public String getControlType() {
+        return controlType;
+    }
+
+    public void setControlType(String controlType) {
+        this.controlType = controlType;
     }
 
     public DocumentDetailDic(String nmrID, String itemID, String itemName, String itemType, String codeID) {

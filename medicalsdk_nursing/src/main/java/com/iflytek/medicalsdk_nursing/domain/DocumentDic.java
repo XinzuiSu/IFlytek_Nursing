@@ -34,6 +34,10 @@ public class DocumentDic {
     @SerializedName("Interface_Name")
     private String interfaceName;
 
+    @Column
+    @SerializedName("Control_Type")
+    private String controlType;
+
     public String getNmrID() {
         return nmrID;
     }
@@ -57,6 +61,14 @@ public class DocumentDic {
 
     public void setInterfaceName(String interfaceName) {
         this.interfaceName = interfaceName;
+    }
+
+    public String getControlType() {
+        return controlType;
+    }
+
+    public void setControlType(String controlType) {
+        this.controlType = controlType;
     }
 
     public DocumentDic(String nmrID, String nmrName, String interfaceName) {

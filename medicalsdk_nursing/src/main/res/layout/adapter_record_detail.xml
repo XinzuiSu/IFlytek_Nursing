@@ -48,7 +48,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                android:maxLines="1"
                 android:text="体温："
                 android:textColor="@color/comm_gray"
                 />
@@ -58,7 +57,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                android:maxLines="1"
                 android:text="13"
                 android:textColor="@color/comm_gray"
                 />
@@ -67,7 +65,7 @@
                 android:id="@+id/detail_item_unit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
+                android:layout_weight="2"
                 android:text="℃"
                 android:visibility="invisible"
                 />

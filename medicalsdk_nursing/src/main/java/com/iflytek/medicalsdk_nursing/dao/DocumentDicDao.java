@@ -85,7 +85,7 @@ public class DocumentDicDao {
      * @return
      */
     public DocumentDic getDocumentDic(String nmrName) {
-        DocumentDic documentDic = db.queryFrist(DocumentDic.class, "nmrName = ?", nmrName);
+        DocumentDic documentDic = db.queryFrist(DocumentDic.class, "nmrName like ?", "%"+nmrName+"%");
         return documentDic;
     }
 

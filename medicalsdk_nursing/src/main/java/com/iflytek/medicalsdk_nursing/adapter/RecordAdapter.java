@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -13,10 +12,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.iflytek.android.framework.util.StringUtils;
-import com.iflytek.medicalsdk_nursing.view.PatientsActivity;
 import com.iflytek.medicalsdk_nursing.R;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
+import com.iflytek.medicalsdk_nursing.view.PatientsActivity;
+import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.List;
  * Created by chenzhilei on 2016/10/19.
  */
 
-public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClickListener,AdapterView.OnItemSelectedListener{
+public class RecordAdapter extends BaseAdapter{
 
     private List<BusinessDataInfo> businessDataInfoList;
 
@@ -34,6 +33,8 @@ public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClic
     private SimpleDateFormat simpleDateFormat;
 
     private ViewHolder viewHolder;
+
+    private int count;
 
     public RecordAdapter(Context context, List<BusinessDataInfo> businessDataInfos){
         this.businessDataInfoList = businessDataInfos;
@@ -97,16 +98,22 @@ public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClic
         viewHolder.voiceLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ((RecordActivity)mContext).playVoice(position);
             }
         });
         RecordContentAdapter recordContentAdapter = new RecordContentAdapter(mContext,businessDataInfo.getWsDataList(),position);
         viewHolder.itemListView.setAdapter(recordContentAdapter);
+        if (position == count){
+            viewHolder.itemListView.setSelection(businessDataInfo.getWsDataList().size());
+        }
         setListViewHeightBasedOnChildren(viewHolder.itemListView);
         return convertView;
     }
 
 
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
@@ -127,24 +134,12 @@ public class RecordAdapter extends BaseAdapter implements AdapterView.OnItemClic
         listView.setLayoutParams(params);
     }
 
+
+
+
     public void updateList(List<BusinessDataInfo> businessDataInfos){
         this.businessDataInfoList = businessDataInfos;
         this.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        viewHolder.itemListView.setSelection(businessDataInfoList.get(i).getWsDataList().size());
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 
     static class ViewHolder{

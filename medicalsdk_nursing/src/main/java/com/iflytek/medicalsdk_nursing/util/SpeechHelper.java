@@ -105,6 +105,15 @@ public class SpeechHelper {
 
     }
 
+    /**
+     * 设置语义存储目录
+     * @param filepath
+     */
+    public void setSavePath(String filepath){
+        mSpeechUnderstander.setParameter(SpeechConstant.ASR_AUDIO_PATH, Environment.getExternalStorageDirectory() +
+                "/iflytek/"+filepath);
+    }
+
 
 
 

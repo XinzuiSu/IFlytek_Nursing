@@ -50,6 +50,8 @@ public class IFlyNursing {
 
     private String[] times;
 
+    private String formStr;
+
     public NursingListener getNursingListener() {
         return nursingListener;
     }
@@ -108,6 +110,18 @@ public class IFlyNursing {
         List<PatientInfo> patientInfoList = gson.fromJson(patientStr, new TypeToken<List<PatientInfo>>() {
         }.getType());
         patientInfoDao.saveOrUpdatePaintInfoList(patientInfoList);
+    }
+
+    public String getFormStr() {
+        return formStr;
+    }
+
+    /**
+     * 存储form表单数据
+     * @param formStr
+     */
+    public void saveFormInfo(String formStr) {
+        this.formStr = formStr;
     }
 
     /**

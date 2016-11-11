@@ -10,4 +10,11 @@
     <color name="green">#00cccb</color>
     <color name="red">#ef3737</color>
     <color name="white">#FFFFFF</color>
+    <!-- 修改照片-->
+    <color name="versioncheck_title_textcolor">#7c7c7c</color>
+    <!-- 取消拍照-->
+    <color name="versioncheck_sure_textcolor">#80c8fc</color>
+
+    <!-- 拍照-->
+    <color name="versioncheck_cancle_textcolor">#b9b9b9</color>
 </resources>

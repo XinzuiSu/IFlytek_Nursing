@@ -10,10 +10,12 @@ import android.widget.TextView;
 
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.R;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
+import com.iflytek.medicalsdk_nursing.view.RecordActivity;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -75,7 +77,18 @@ public class RecordContentAdapter extends BaseAdapter{
         if (StringUtils.isNotBlank(wsData.getValueCaption())){
             viewHolder.valueText.setText(wsData.getValueCaption());
         }else {
-            viewHolder.valueText.setText(wsData.getValue());
+            if (wsData.getValue().contains(":")){
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHH:mm:ss");
+                Date date = null;
+                try {
+                    date = dateFormat.parse(wsData.getValue());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                viewHolder.valueText.setText(simpleDateFormat.format(date));
+            }else {
+                viewHolder.valueText.setText(wsData.getValue());
+            }
         }
         viewHolder.deleteLayout.setOnClickListener(new View.OnClickListener() {
             @Override

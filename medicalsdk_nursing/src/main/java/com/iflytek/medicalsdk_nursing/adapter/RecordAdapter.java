@@ -2,6 +2,7 @@ package com.iflytek.medicalsdk_nursing.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,8 +78,9 @@ public class RecordAdapter extends BaseAdapter{
         }
         BusinessDataInfo businessDataInfo = businessDataInfoList.get(position);
         viewHolder.bedNumberText.setText(StringUtils.isNotBlank(businessDataInfo.getBedNo())?businessDataInfo.getBedNo()+"床":"无");
-        if (StringUtils.isBlank(businessDataInfo.getPatName())){
+        if (StringUtils.isBlank(businessDataInfo.getPatName())||StringUtils.isBlank(businessDataInfo.getBedNo())){
             viewHolder.noDataText.setVisibility(View.VISIBLE);
+            viewHolder.bedNumberText.setTextColor(Color.RED);
             viewHolder.sexText.setVisibility(View.GONE);
             viewHolder.ageText.setVisibility(View.GONE);
             viewHolder.nameText.setVisibility(View.GONE);

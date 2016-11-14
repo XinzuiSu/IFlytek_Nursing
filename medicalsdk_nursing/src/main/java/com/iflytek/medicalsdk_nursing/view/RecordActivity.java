@@ -14,10 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.iflytek.android.framework.toast.BaseToast;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.android.framework.volley.Request;
 import com.iflytek.cloud.SpeechError;
@@ -76,7 +76,7 @@ public class RecordActivity extends Activity {
     /**
      * 时间基础格式化
      */
-    public static final String DEAFULTFORMAT = "yyyyMMddHH:mm:ss";
+    public static final String DEAFULTFORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private Spinner spinner;
 
@@ -330,21 +330,31 @@ public class RecordActivity extends Activity {
         saveLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if (businessDataInfoList.size() == 0){
+                    showTip("尚未录入任何数据！");
+                    return;
+                }
                 for (BusinessDataInfo businessDataInfo : businessDataInfoList) {
                     if (StringUtils.isBlank(businessDataInfo.getBedNo())) {
-                        Toast.makeText(RecordActivity.this, "尚有未确定床号患者！", Toast.LENGTH_LONG).show();
+                        showTip("尚有未确定床号患者！");
                         return;
                     } else if (StringUtils.isBlank(businessDataInfo.getPatName())) {
-                        Toast.makeText(RecordActivity.this, businessDataInfo.getBedNo() + "床患者信息错误，请检查数据！", Toast.LENGTH_LONG).show();
+                        showTip(businessDataInfo.getBedNo() + "床患者信息错误，请检查数据！");
                         return;
                     }
                 }
-//                String formStr = IFlyNursing.getInstance().getFormStr();
-                String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
-                List<FormCheck> formCheckList = new Gson().fromJson(formStr, new TypeToken<List<FormCheck>>() {
-                }.getType());
-                CustomDialog customDialog = new CustomDialog(RecordActivity.this, formCheckList);
-                customDialog.show();
+                if (StringUtils.isEquals(typeList.get(spinner.getSelectedItemPosition()), "体温单")) {
+                    saveRecordInfo(new ArrayList<FormCheck>());
+                }else {
+                    // String formStr = IFlyNursing.getInstance().getFormStr();
+                    String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
+                    List<FormCheck> formCheckList = new Gson().fromJson(formStr, new TypeToken<List<FormCheck>>() {
+                    }.getType());
+                    CustomDialog customDialog = new CustomDialog(RecordActivity.this, formCheckList);
+                    customDialog.show();
+                }
+
             }
         });
     }
@@ -423,7 +433,7 @@ public class RecordActivity extends Activity {
             speechHelper.setSavePath(filePath);
             ret = mSpeechUnderstander.startUnderstanding(mSpeechUnderstanderListener);
             if (ret != 0) {
-                Toast.makeText(this, "语义理解失败", Toast.LENGTH_SHORT).show();
+                showTip("语义理解失败");
                 glWaveFormView.reset();
             } else {
 //                Toast.makeText(this, "请说话", Toast.LENGTH_SHORT).show();
@@ -465,10 +475,16 @@ public class RecordActivity extends Activity {
                         key = iterator.next();
                         value = slotsObject.optString(key);
                         if (value.contains("date")) {
-                            value = slotsObject.optJSONObject(key).optString("date") + " " + slotsObject.optJSONObject(key).optString("time");
-
+                            String time = "00:00:00";
+                            if (StringUtils.isNotBlank(slotsObject.optJSONObject(key).optString("time"))){
+                                time = slotsObject.optJSONObject(key).optString("time");
+                            }
+                            value = slotsObject.optJSONObject(key).optString("date") +" " + time;
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH:mm:ss");
+                            Date date = dateFormat.parse(value);
+                            value = simpleDateFormat.format(date);
                         }
-                        if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed")) {
+                        if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed")||StringUtils.isEquals(key,"name")) {
                             continue;
                         }
                         String[] keys;
@@ -513,6 +529,36 @@ public class RecordActivity extends Activity {
                     if (StringUtils.isNotBlank(type)) {
                         //切换种类
                         spinner.setSelection(typeList.indexOf(type));
+                    }
+                    if (StringUtils.isNotBlank(name)){
+                        BusinessDataInfo busInfo = null;
+                        int i = 0;
+                        for (BusinessDataInfo info : businessDataInfoList) {
+                            if (StringUtils.isEquals(info.getPatName(), name)) {
+                                busInfo = info;
+                                i = businessDataInfoList.indexOf(info);
+                                break;
+                            }
+                        }
+                        if (busInfo == null) {
+                            busInfo = new BusinessDataInfo();
+                            busInfo.setPatName(name);
+                            PatientInfoDao patientInfoDao = new PatientInfoDao(RecordActivity.this);
+                            PatientInfo patientInfo = patientInfoDao.getPatientInfoByName(name);
+                            if (patientInfo != null) {
+                                busInfo.setPatName(patientInfo.getHzxm());
+                                busInfo.setAge(patientInfo.getAge());
+                                busInfo.setSex(patientInfo.getSex());
+                                busInfo.setSyxh(patientInfo.getSyxh());
+                                busInfo.setYexh(patientInfo.getYexh());
+                            }
+                            busInfo.setWsDataList(new ArrayList<WSData>());
+                            businessDataInfoList.add(busInfo);
+                            position = businessDataInfoList.size() - 1;
+                        } else {
+                            position = i;
+                            listView.setSelection(position);
+                        }
                     }
                     if (StringUtils.isNotBlank(bed)) {
                         BusinessDataInfo busInfo = null;
@@ -565,6 +611,8 @@ public class RecordActivity extends Activity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
             recordAdapter = new RecordAdapter(RecordActivity.this, businessDataInfoList);
             listView.setAdapter(recordAdapter);
@@ -616,7 +664,6 @@ public class RecordActivity extends Activity {
         }
     };
 
-
     private void setListViewSelecion() {
         listView.setSelection(position);
         recordAdapter.setCount(position);
@@ -624,7 +671,7 @@ public class RecordActivity extends Activity {
 
 
     private void showTip(String text) {
-        Toast.makeText(RecordActivity.this, text, Toast.LENGTH_SHORT).show();
+        BaseToast.showToastNotRepeat(RecordActivity.this,text,2000);
     }
 
     /**

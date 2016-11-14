@@ -94,6 +94,18 @@ public class PatientInfoDao {
 
 
     /**
+     * 根据姓名获取患者信息
+     *
+     * @param name
+     * @return
+     */
+    public PatientInfo getPatientInfoByName(String name) {
+        PatientInfo patientInfo = db.queryFrist(PatientInfo.class, "hzxm = ?", name);
+        return patientInfo;
+    }
+
+
+    /**
      * 获取所有患者信息
      *
      * @return

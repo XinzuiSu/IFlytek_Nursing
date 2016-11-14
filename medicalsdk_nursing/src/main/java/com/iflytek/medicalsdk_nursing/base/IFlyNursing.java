@@ -12,7 +12,6 @@ import com.google.gson.reflect.TypeToken;
 import com.iflytek.android.framework.db.DbHelper;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
-import com.iflytek.medicalsdk_nursing.util.NursingListener;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
@@ -22,6 +21,7 @@ import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.domain.UserInfo;
+import com.iflytek.medicalsdk_nursing.util.NursingListener;
 
 import java.util.List;
 
@@ -118,6 +118,7 @@ public class IFlyNursing {
 
     /**
      * 存储form表单数据
+     *
      * @param formStr
      */
     public void saveFormInfo(String formStr) {
@@ -151,7 +152,7 @@ public class IFlyNursing {
         documentDetailDicDao.saveOrUpdateDocumentDetailDicList(documentDetailDicList);
     }
 
-    public void saveTimeInfo(String timeStr){
+    public void saveTimeInfo(String timeStr) {
         timeStr = "3,7,11,15,19,23";
         times = timeStr.split(",");
     }
@@ -174,7 +175,9 @@ public class IFlyNursing {
      */
     private void init(Context context) {
         openBluetooth(context);
-        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://bj.voicecloud.cn/index.htm");
+//        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://bj.voicecloud.cn/index.htm");
+
+        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://116.213.69.199:1028/index.htm");
         initDataBase(context);
     }
 

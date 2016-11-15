@@ -66,16 +66,21 @@ public class DialogCheckAdapter extends BaseAdapter{
             checkViewHolder = (CheckViewHolder) view.getTag();
         }
         checkViewHolder.formText.setText(formCheckList.get(i).getName());
+        checkViewHolder.formCheck.setOnCheckedChangeListener(null);
+        checkViewHolder.formCheck.setChecked(formCheckList.get(i).isCheck());
         checkViewHolder.formCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
+                    formCheckList.get(i).setCheck(true);
                     selectedFormList.add(formCheckList.get(i));
                 }else {
                     if (selectedFormList.contains(formCheckList.get(i))){
+                        formCheckList.get(i).setCheck(false);
                         selectedFormList.remove(formCheckList.get(i));
                     }
                 }
+
             }
         });
         return view;
@@ -95,7 +100,7 @@ public class DialogCheckAdapter extends BaseAdapter{
     static class CheckViewHolder{
         //表单文本
         private TextView formText;
-        //表单选中
+        //选中框
         private CheckBox formCheck;
     }
 }

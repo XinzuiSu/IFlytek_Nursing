@@ -19,6 +19,10 @@ public class FormCheck {
      * 代码
      */
     private String Bldm;
+    /**
+     * 是否选中
+     */
+    private boolean isCheck;
 
     public String getName() {
         return Name;
@@ -34,5 +38,13 @@ public class FormCheck {
 
     public void setBldm(String bldm) {
         Bldm = bldm;
+    }
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public void setCheck(boolean check) {
+        isCheck = check;
     }
 }

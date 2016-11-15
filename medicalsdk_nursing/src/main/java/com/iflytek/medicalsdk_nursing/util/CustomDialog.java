@@ -10,6 +10,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,7 +55,9 @@ public class CustomDialog extends Dialog{
 				R.layout.custom_dialog, null);
 		this.formCheckList = formChecks;
 		this.recordActivity = (RecordActivity) context;
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(view);
+
 		this.setCancelable(true);
 		initView();
 	}

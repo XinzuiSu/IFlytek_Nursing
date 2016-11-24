@@ -2,14 +2,17 @@ package com.iflytek.medicalsdk_nursing.util;
 
 import android.content.Context;
 
+import com.iflytek.android.framework.toast.BaseToast;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
 import com.iflytek.medicalsdk_nursing.dao.MappingDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
+import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
 import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
 import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
+import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
 
 import org.json.JSONException;
@@ -32,7 +35,7 @@ import java.util.List;
  * @version: V1.0
  */
 
-public class DataDealUtil {
+public abstract class DataDealUtil {
 
     /**
      * 时间基础格式化
@@ -51,8 +54,6 @@ public class DataDealUtil {
     private Context mContext;
     //数据集
     private BusinessDataInfo businessDataInfo;
-    //结果集
-    private List<WSData> wsDataList = new ArrayList<>();
     //转义json
     private JSONObject jsonObject;
     //业务
@@ -67,67 +68,190 @@ public class DataDealUtil {
     private String bed = "";
     //类型
     private String type = "";
+
+    private String recordTime = "";
     //映射关系Dao类
     private MappingDao mappingDao;
     //文书字典Dao
     private DocumentDetailDicDao documentDetailDicDao;
     //选项字典Dao
     private OptionDicDao optionDicDao;
+    //选中项
+    private int selectPosition;
+    //数据列表
+    private List<BusinessDataInfo> businessDataInfoList;
 
     /**
      * 数据处理
      * @param context
-     * @param resultStr
+     * @param businessDataInfos
      */
-    public DataDealUtil(Context context,String resultStr){
+    public DataDealUtil(Context context,List<BusinessDataInfo> businessDataInfos,int position) {
         this.mContext = context;
         mappingDao = new MappingDao(context);
         documentDetailDicDao = new DocumentDetailDicDao(context);
         optionDicDao = new OptionDicDao(context);
+        this.businessDataInfoList = businessDataInfos;
+        this.selectPosition = position;
     }
 
+    public int getSelectPosition() {
+        return selectPosition;
+    }
 
     /**
      * 取出基本数据
+     *
      * @return
      */
-    private void transDataForBase(String result) throws JSONException {
+    public List<BusinessDataInfo> transDataForBase(String result) throws JSONException, ParseException {
         jsonObject = new JSONObject(result);
         service = jsonObject.optString("service");
         JSONObject semanticObject = jsonObject.optJSONObject("semantic");
+        List<WSData> wsDataList = new ArrayList<>();
         if (semanticObject != null && semanticObject.has("slots")) {
             JSONObject slotsObject = semanticObject.optJSONObject("slots");
             Iterator<String> iterator = slotsObject.keys();
             bed = slotsObject.optString("bed");
             type = slotsObject.optString("type");
             name = slotsObject.optString("name");
+            wsDataList = doWhileForWsData(iterator, slotsObject);
+        }
+        //护理业务
+        if (StringUtils.isEquals(service, "nursing")) {
+            traceType(result);
+            tracePatientInfo();
+            return assembleData(wsDataList);
+        } else {
+            BaseToast.showToastNotRepeat(mContext, "暂不支持您的说法", 2000);
+            onError();
+            return businessDataInfoList;
+        }
+    }
+
+    /**
+     * 构建护理类型
+     *
+     * @param resultText
+     */
+    private void traceType(String resultText) {
+        if (resultText.contains("体温单")) {
+            type = "体温单";
+        }
+        if (StringUtils.isNotBlank(type)) {
+            //切换种类
+            onTypeSelected(type);
+            if (StringUtils.isNotBlank(recordTime)){
+                onRecordTime(recordTime);
+            }
+//            spinner.setSelection(typeList.indexOf(type));
+        }
+    }
+
+    /***
+     * 构建患者信息
+     */
+    private void tracePatientInfo() {
+        if (StringUtils.isNotBlank(name)) {
+            BusinessDataInfo busInfo = null;
+            int i = 0;
+            for (BusinessDataInfo info : businessDataInfoList) {
+                if (StringUtils.isEquals(info.getPatName(), name)) {
+                    busInfo = info;
+                    i = businessDataInfoList.indexOf(info);
+                    break;
+                }
+            }
+            if (busInfo == null) {
+                busInfo = new BusinessDataInfo();
+                busInfo.setPatName(name);
+                PatientInfoDao patientInfoDao = new PatientInfoDao(mContext);
+                PatientInfo patientInfo = patientInfoDao.getPatientInfoByName(name);
+                if (patientInfo != null) {
+                    busInfo.setPatName(patientInfo.getHzxm());
+                    busInfo.setAge(patientInfo.getAge());
+                    busInfo.setSex(patientInfo.getSex());
+                    busInfo.setSyxh(patientInfo.getSyxh());
+                    busInfo.setYexh(patientInfo.getYexh());
+                }
+                busInfo.setWsDataList(new ArrayList<WSData>());
+                businessDataInfoList.add(busInfo);
+                selectPosition = businessDataInfoList.size() - 1;
+            } else {
+                selectPosition = i;
+                onPatientSelected(selectPosition);
+            }
+        }
+        if (StringUtils.isNotBlank(bed)) {
+            BusinessDataInfo busInfo = null;
+            int i = 0;
+            for (BusinessDataInfo info : businessDataInfoList) {
+                if (StringUtils.isEquals(info.getBedNo(), bed)) {
+                    busInfo = info;
+                    i = businessDataInfoList.indexOf(info);
+                    break;
+                }
+            }
+            if (busInfo == null) {
+                busInfo = new BusinessDataInfo();
+                busInfo.setBedNo(bed);
+                PatientInfoDao patientInfoDao = new PatientInfoDao(mContext);
+                PatientInfo patientInfo = patientInfoDao.getPatientInfo(bed);
+                if (patientInfo != null) {
+                    busInfo.setPatName(patientInfo.getHzxm());
+                    busInfo.setAge(patientInfo.getAge());
+                    busInfo.setSex(patientInfo.getSex());
+                    busInfo.setSyxh(patientInfo.getSyxh());
+                    busInfo.setYexh(patientInfo.getYexh());
+                }
+                busInfo.setWsDataList(new ArrayList<WSData>());
+                businessDataInfoList.add(busInfo);
+                selectPosition = businessDataInfoList.size() - 1;
+            } else {
+                selectPosition = i;
+                onPatientSelected(selectPosition);
+            }
         }
     }
 
     /**
      * 循环便利取出wsData
+     *
      * @return
      */
-    private List<WSData> doWhileForWsData(Iterator<String> iterator,JSONObject slotsObject) throws ParseException {
+    private List<WSData> doWhileForWsData(Iterator<String> iterator, JSONObject slotsObject) throws ParseException {
 
         List<WSData> wsDataList = new ArrayList<>();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             key = iterator.next();
             value = slotsObject.optString(key);
+            //过滤掉时间
+            if (StringUtils.isEquals(key, "datetime")){
+                continue;
+            }
+            if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed") || StringUtils.isEquals(key, "name")) {
+                //护理类型时间
+                if (slotsObject.optJSONObject("datetime")!=null){
+                    String time = "00:00:00";
+                    if (StringUtils.isNotBlank(slotsObject.optJSONObject("datetime").optString("time"))) {
+                        time = slotsObject.optJSONObject("datetime").optString("time");
+                    }
+                    recordTime = slotsObject.optJSONObject("datetime").optString("date") + " " + time;
+                }
+                continue;
+            }
             //处理时间格式
-            if (value.contains("date")) {
+            if (!StringUtils.isEquals(key,"datetime")&&value.contains("date")) {
                 String time = "00:00:00";
-                if (StringUtils.isNotBlank(slotsObject.optJSONObject(key).optString("time"))){
+                if (StringUtils.isNotBlank(slotsObject.optJSONObject(key).optString("time"))) {
                     time = slotsObject.optJSONObject(key).optString("time");
                 }
-                value = slotsObject.optJSONObject(key).optString("date") +" " + time;
+                value = slotsObject.optJSONObject(key).optString("date") + " " + time;
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(NISDATEFORMAT);
                 Date date = dateFormat.parse(value);
                 value = simpleDateFormat.format(date);
             }
-            if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed")||StringUtils.isEquals(key,"name")) {
-                continue;
-            }
+
             //组装数据
             WSData wsData = new WSData();
             //根据映射关系表设置项目值
@@ -136,12 +260,13 @@ public class DataDealUtil {
             wsData.setName(mappingInfo.getValue());
             DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue());
             String[] values;
-            if (value.contains(",")) {
-                values = value.split(",");
+            if (value.contains("`")) {
+                values = value.split("`");
             } else {
                 values = new String[]{value};
             }
-            for (String valueStr: values){
+            //多结果遍历解析
+            for (String valueStr : values) {
                 if (documentDetailDic != null) {
                     //项目具有相关ID
                     wsData.setID(documentDetailDic.getItemID());
@@ -167,6 +292,56 @@ public class DataDealUtil {
     }
 
 
+    /**
+     * 组装数据
+     *
+     * @param wsDataList
+     * @return
+     */
+    private List<BusinessDataInfo> assembleData(List<WSData> wsDataList) {
+        if (wsDataList != null && wsDataList.size() > 0) {
+            //如果当前的数据列表为空则默认一床用户
+            if (businessDataInfoList.size() == 0) {
+                businessDataInfo = new BusinessDataInfo();
+                businessDataInfo.setWsDataList(new ArrayList<WSData>());
+            } else {
+                businessDataInfo = businessDataInfoList.get(selectPosition);
+            }
+            businessDataInfo.getWsDataList().addAll(wsDataList);
+            if (businessDataInfoList.size() == 0) {
+                businessDataInfoList.add(businessDataInfo);
+            } else {
+                businessDataInfoList.set(selectPosition, businessDataInfo);
+            }
+        }
+        return businessDataInfoList;
+    }
+
+
+    /**
+     * 选中患者
+     *
+     * @param position
+     */
+    public abstract void onPatientSelected(int position);
+
+    /**
+     * 选中护理类型
+     *
+     * @param type
+     */
+    public abstract void onTypeSelected(String type);
+
+    /**
+     * 异常
+     */
+    public abstract void onError();
+
+    /**
+     * 修改时间
+     * @param recordTime
+     */
+    public abstract void onRecordTime(String recordTime);
 
 
 }

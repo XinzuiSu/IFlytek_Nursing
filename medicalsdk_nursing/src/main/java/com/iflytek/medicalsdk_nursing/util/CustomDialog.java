@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.iflytek.medicalsdk_nursing.R;
 import com.iflytek.medicalsdk_nursing.adapter.DialogCheckAdapter;
 import com.iflytek.medicalsdk_nursing.domain.FormCheck;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
+import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class CustomDialog extends Dialog{
 
 	private List<FormCheck> formCheckList;
 
-	private RecordActivity recordActivity;
+	private StandingRecordActivity recordActivity;
 
 	public CustomDialog(Context context, List<FormCheck> formChecks) {
 		super(context);
@@ -54,7 +54,7 @@ public class CustomDialog extends Dialog{
 		this.view = LayoutInflater.from(mContext).inflate(
 				R.layout.custom_dialog, null);
 		this.formCheckList = formChecks;
-		this.recordActivity = (RecordActivity) context;
+		this.recordActivity = (StandingRecordActivity) context;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(view);
 

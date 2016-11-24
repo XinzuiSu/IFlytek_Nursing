@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
 import com.iflytek.medicalsdk_nursing.dao.MappingDao;
 import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
+import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class NursingSpeecher {
      * 开始记录
      */
     public void startRecord(){
-        Intent intent = new Intent(mContext,RecordActivity.class);
+        Intent intent = new Intent(mContext,StandingRecordActivity.class);
         mContext.startActivity(intent);
         IFlyNursing.getInstance().getNursingListener().onStartListener(true);
     }

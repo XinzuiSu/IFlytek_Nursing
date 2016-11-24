@@ -16,7 +16,7 @@ import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.R;
 import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 import com.iflytek.medicalsdk_nursing.view.PatientsActivity;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
+import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -67,7 +67,6 @@ public class RecordAdapter extends BaseAdapter{
             viewHolder.nameText = (TextView) convertView.findViewById(R.id.instrument_name);
             viewHolder.sexText = (TextView) convertView.findViewById(R.id.instrument_sex);
             viewHolder.ageText = (TextView) convertView.findViewById(R.id.instrument_age);
-            viewHolder.voiceLayout = (LinearLayout) convertView.findViewById(R.id.instrument_voice);
             viewHolder.itemListView = (ListView) convertView.findViewById(R.id.instrument_listView);
             viewHolder.noDataText = (TextView) convertView.findViewById(R.id.instrument_nodata_text);
             viewHolder.patientLayout = (LinearLayout) convertView.findViewById(R.id.instrument_patient_layout);
@@ -89,7 +88,7 @@ public class RecordAdapter extends BaseAdapter{
                 public void onClick(View view) {
                     Intent intent = new Intent(mContext, PatientsActivity.class);
                     intent.putExtra("POSITION",position);
-                    ((RecordActivity)mContext).startActivityForResult(intent,1001);
+                    ((StandingRecordActivity)mContext).startActivityForResult(intent,1001);
                 }
             });
         }else {
@@ -97,12 +96,6 @@ public class RecordAdapter extends BaseAdapter{
             viewHolder.sexText.setText(businessDataInfo.getSex());
             viewHolder.ageText.setText(businessDataInfo.getAge());
         }
-        viewHolder.voiceLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((RecordActivity)mContext).playVoice(position);
-            }
-        });
         RecordContentAdapter recordContentAdapter = new RecordContentAdapter(mContext,businessDataInfo.getWsDataList(),position);
         viewHolder.itemListView.setAdapter(recordContentAdapter);
         if (position == count){
@@ -165,10 +158,6 @@ public class RecordAdapter extends BaseAdapter{
          * 无数据提示
          */
         private TextView noDataText;
-        /**
-         * 语音按钮
-         */
-        private LinearLayout voiceLayout;
         /**
          * 患者信息layout
          */

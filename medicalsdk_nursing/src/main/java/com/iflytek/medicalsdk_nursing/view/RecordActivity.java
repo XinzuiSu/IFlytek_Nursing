@@ -37,26 +37,23 @@ import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
 import com.iflytek.medicalsdk_nursing.domain.FormCheck;
-import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
-import com.iflytek.medicalsdk_nursing.domain.WSData;
 import com.iflytek.medicalsdk_nursing.net.SoapResult;
 import com.iflytek.medicalsdk_nursing.net.VolleyTool;
 import com.iflytek.medicalsdk_nursing.util.CustomDialog;
+import com.iflytek.medicalsdk_nursing.util.DataDealUtil;
 import com.iflytek.medicalsdk_nursing.util.GLWaveformView;
 import com.iflytek.medicalsdk_nursing.util.MediaplayerUtil;
 import com.iflytek.medicalsdk_nursing.util.SpeechHelper;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.iflytek.medicalsdk_nursing.R.id.record_spinner;
@@ -451,164 +448,33 @@ public class RecordActivity extends Activity {
         @Override
         public void onResult(final UnderstanderResult result) {
             glWaveFormView.reset();
-            BusinessDataInfo businessDataInfo = new BusinessDataInfo();
-            List<WSData> wsDataList = new ArrayList<>();
-            JSONObject jsonObject;
-            String service;
-            String key = "";
-            String value = "";
-            String name = "";
-            String bed = "";
-            String type = "";
+
             try {
-                jsonObject = new JSONObject(result.getResultString());
-                service = jsonObject.optString("service");
-                JSONObject semanticObject = jsonObject.optJSONObject("semantic");
-                if (semanticObject != null && semanticObject.has("slots")) {
-                    JSONObject slotsObject = semanticObject.optJSONObject("slots");
-                    Iterator<String> iterator = slotsObject.keys();
-                    bed = slotsObject.optString("bed");
-                    type = slotsObject.optString("type");
-                    name = slotsObject.optString("name");
-                    //遍历结果
-                    while (iterator.hasNext()) {
-                        key = iterator.next();
-                        value = slotsObject.optString(key);
-                        if (value.contains("date")) {
-                            String time = "00:00:00";
-                            if (StringUtils.isNotBlank(slotsObject.optJSONObject(key).optString("time"))){
-                                time = slotsObject.optJSONObject(key).optString("time");
-                            }
-                            value = slotsObject.optJSONObject(key).optString("date") +" " + time;
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH:mm:ss");
-                            Date date = dateFormat.parse(value);
-                            value = simpleDateFormat.format(date);
-                        }
-                        if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed")||StringUtils.isEquals(key,"name")) {
-                            continue;
-                        }
-                        String[] keys;
-                        if (key.contains(",")) {
-                            keys = key.split(",");
-                        } else {
-                            keys = new String[]{key};
-                        }
-                        for (String keyStr : keys) {
-                            //组装数据
-                            WSData wsData = new WSData();
-                            //设置项目值
-                            MappingInfo mappingInfo = mappingDao.getMappingDic(keyStr);
-                            wsData.setName(mappingInfo.getValue());
-                            DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue());
-                            if (documentDetailDic != null) {
-                                wsData.setID(documentDetailDic.getItemID());
-                                if (StringUtils.isNotBlank(documentDetailDic.getCodeID())) {
-                                    //判断选项是值还是选择项
-                                    OptionDic optionDic = optionDicDao.getOptionDic(documentDetailDic.getCodeID(), value);
-                                    if (optionDic != null) {
-                                        wsData.setValue(optionDic.getOptCode());
-                                        wsData.setValueCaption(optionDic.getOptName());
-                                    } else {
-                                        wsData.setValueCaption(value);
-                                    }
-                                } else {
-                                    wsData.setValue(value);
-                                }
-                            } else {
-                                wsData.setValue(value);
-                            }
-                            wsDataList.add(wsData);
-                        }
+                DataDealUtil dataDealUtil = new DataDealUtil(RecordActivity.this,businessDataInfoList,position) {
+                    @Override
+                    public void onPatientSelected(int position) {
+                        listView.setSelection(position);
                     }
-                }
-                //护理业务
-                if (StringUtils.isEquals(service, "nursing")) {
-                    if (result.getResultString().contains("体温单")) {
-                        type = "体温单";
-                    }
-                    if (StringUtils.isNotBlank(type)) {
+
+                    @Override
+                    public void onTypeSelected(String type) {
                         //切换种类
                         spinner.setSelection(typeList.indexOf(type));
                     }
-                    if (StringUtils.isNotBlank(name)){
-                        BusinessDataInfo busInfo = null;
-                        int i = 0;
-                        for (BusinessDataInfo info : businessDataInfoList) {
-                            if (StringUtils.isEquals(info.getPatName(), name)) {
-                                busInfo = info;
-                                i = businessDataInfoList.indexOf(info);
-                                break;
-                            }
-                        }
-                        if (busInfo == null) {
-                            busInfo = new BusinessDataInfo();
-                            busInfo.setPatName(name);
-                            PatientInfoDao patientInfoDao = new PatientInfoDao(RecordActivity.this);
-                            PatientInfo patientInfo = patientInfoDao.getPatientInfoByName(name);
-                            if (patientInfo != null) {
-                                busInfo.setPatName(patientInfo.getHzxm());
-                                busInfo.setAge(patientInfo.getAge());
-                                busInfo.setSex(patientInfo.getSex());
-                                busInfo.setSyxh(patientInfo.getSyxh());
-                                busInfo.setYexh(patientInfo.getYexh());
-                            }
-                            busInfo.setWsDataList(new ArrayList<WSData>());
-                            businessDataInfoList.add(busInfo);
-                            position = businessDataInfoList.size() - 1;
-                        } else {
-                            position = i;
-                            listView.setSelection(position);
-                        }
+
+                    @Override
+                    public void onError() {
+                        showTip("暂不支持您的说法");
+                        return;
                     }
-                    if (StringUtils.isNotBlank(bed)) {
-                        BusinessDataInfo busInfo = null;
-                        int i = 0;
-                        for (BusinessDataInfo info : businessDataInfoList) {
-                            if (StringUtils.isEquals(info.getBedNo(), bed)) {
-                                busInfo = info;
-                                i = businessDataInfoList.indexOf(info);
-                                break;
-                            }
-                        }
-                        if (busInfo == null) {
-                            busInfo = new BusinessDataInfo();
-                            busInfo.setBedNo(bed);
-                            PatientInfoDao patientInfoDao = new PatientInfoDao(RecordActivity.this);
-                            PatientInfo patientInfo = patientInfoDao.getPatientInfo(bed);
-                            if (patientInfo != null) {
-                                busInfo.setPatName(patientInfo.getHzxm());
-                                busInfo.setAge(patientInfo.getAge());
-                                busInfo.setSex(patientInfo.getSex());
-                                busInfo.setSyxh(patientInfo.getSyxh());
-                                busInfo.setYexh(patientInfo.getYexh());
-                            }
-                            busInfo.setWsDataList(new ArrayList<WSData>());
-                            businessDataInfoList.add(busInfo);
-                            position = businessDataInfoList.size() - 1;
-                        } else {
-                            position = i;
-                            listView.setSelection(position);
-                        }
+
+                    @Override
+                    public void onRecordTime(String recordTime) {
+                        timeText.setText(recordTime);
                     }
-                    if (wsDataList != null && wsDataList.size() > 0) {
-                        //如果当前的数据列表为空则默认一床用户
-                        if (businessDataInfoList.size() == 0) {
-                            businessDataInfo = new BusinessDataInfo();
-                            businessDataInfo.setWsDataList(new ArrayList<WSData>());
-                        } else {
-                            businessDataInfo = businessDataInfoList.get(position);
-                        }
-                        businessDataInfo.getWsDataList().addAll(wsDataList);
-                        if (businessDataInfoList.size() == 0) {
-                            businessDataInfoList.add(businessDataInfo);
-                        } else {
-                            businessDataInfoList.set(position, businessDataInfo);
-                        }
-                    }
-                } else {
-                    showTip("暂不支持您的说法");
-                    return;
-                }
+                };
+                businessDataInfoList = dataDealUtil.transDataForBase(result.getResultString());
+                position = dataDealUtil.getSelectPosition();
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (ParseException e) {
@@ -623,6 +489,7 @@ public class RecordActivity extends Activity {
             } else {
                 voicePathList.set(position, voicePathList.get(position) + "," + filePath);
             }
+            mSpeechUnderstander.startUnderstanding(mSpeechUnderstanderListener);
 //            IFlyNursing.getInstance().getNursingListener().onDataSavedListener(result.getResultString());
         }
 

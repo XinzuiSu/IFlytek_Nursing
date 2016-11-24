@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.R;
 import com.iflytek.medicalsdk_nursing.domain.WSData;
-import com.iflytek.medicalsdk_nursing.view.RecordActivity;
+import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,13 +32,13 @@ public class RecordContentAdapter extends BaseAdapter{
 
     private int groupID;
 
-    private RecordActivity recordActivity;
+    private StandingRecordActivity recordActivity;
 
 
     public RecordContentAdapter(Context context, List<WSData> wsDatas , int groupID){
         this.wsDataList = wsDatas;
         this.mContext = context;
-        this.recordActivity = (RecordActivity) context;
+        this.recordActivity = (StandingRecordActivity) context;
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.groupID = groupID;
     }

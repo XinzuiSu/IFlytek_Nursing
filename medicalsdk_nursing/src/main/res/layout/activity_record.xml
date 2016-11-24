@@ -80,6 +80,7 @@
             android:id="@+id/recored_time_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@mipmap/input_bg"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="20dp"
@@ -87,6 +88,21 @@
             android:paddingLeft="10dp"
             android:textSize="14sp"
             />
+
+
+        <LinearLayout
+            android:id="@+id/record_voice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/voice_image"
+                />
+        </LinearLayout>
 
     </LinearLayout>
 

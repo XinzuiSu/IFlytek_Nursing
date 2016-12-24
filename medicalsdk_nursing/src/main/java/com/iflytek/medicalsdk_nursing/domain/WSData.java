@@ -22,6 +22,11 @@ public class WSData {
     private String Name;
 
     /**
+     * 扩展名称
+     */
+    private String expandName;
+
+    /**
      * 值
      */
     private String Value;
@@ -61,6 +66,14 @@ public class WSData {
 
     public void setValueCaption(String valueCaption) {
         this.ValueCaption = valueCaption;
+    }
+
+    public String getExpandName() {
+        return expandName;
+    }
+
+    public void setExpandName(String expandName) {
+        this.expandName = expandName;
     }
 
     public WSData(String ID, String Name, String Value, String ValueCaption) {

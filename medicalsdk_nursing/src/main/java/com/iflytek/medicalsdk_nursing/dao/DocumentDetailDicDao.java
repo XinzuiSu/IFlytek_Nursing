@@ -59,7 +59,6 @@ public class DocumentDetailDicDao {
                 stat.bindString(4, StringUtils.nullStrToEmpty(info.getItemType()));
                 stat.bindString(5, StringUtils.nullStrToEmpty(info.getCodeID()));
                 stat.bindString(6, StringUtils.nullStrToEmpty(info.getControlType()));
-
                 long result = stat.executeInsert();
                 if (result < 0) {
                     return false;

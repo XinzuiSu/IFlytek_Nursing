@@ -2,7 +2,6 @@ package com.iflytek.medicalsdk_nursing.util;
 
 import android.content.Context;
 
-import com.iflytek.android.framework.toast.BaseToast;
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
 import com.iflytek.medicalsdk_nursing.dao.MappingDao;
@@ -80,6 +79,7 @@ public abstract class DataDealUtil {
     private int selectPosition;
     //数据列表
     private List<BusinessDataInfo> businessDataInfoList;
+    private ProfessionalDataTraffic professionalDataTraffic;
 
     /**
      * 数据处理
@@ -93,6 +93,7 @@ public abstract class DataDealUtil {
         optionDicDao = new OptionDicDao(context);
         this.businessDataInfoList = businessDataInfos;
         this.selectPosition = position;
+        professionalDataTraffic = new ProfessionalDataTraffic(documentDetailDicDao,optionDicDao);
     }
 
     public int getSelectPosition() {
@@ -107,26 +108,71 @@ public abstract class DataDealUtil {
     public List<BusinessDataInfo> transDataForBase(String result) throws JSONException, ParseException {
         jsonObject = new JSONObject(result);
         service = jsonObject.optString("service");
-        JSONObject semanticObject = jsonObject.optJSONObject("semantic");
-        List<WSData> wsDataList = new ArrayList<>();
-        if (semanticObject != null && semanticObject.has("slots")) {
-            JSONObject slotsObject = semanticObject.optJSONObject("slots");
-            Iterator<String> iterator = slotsObject.keys();
-            bed = slotsObject.optString("bed");
-            type = slotsObject.optString("type");
-            name = slotsObject.optString("name");
-            wsDataList = doWhileForWsData(iterator, slotsObject);
-        }
         //护理业务
         if (StringUtils.isEquals(service, "nursing")) {
+            //QA返回结果
+            JSONObject semanticObject = jsonObject.optJSONObject("semantic");
+            List<WSData> wsDataList = new ArrayList<>();
+            if (semanticObject != null && semanticObject.has("slots")) {
+                JSONObject slotsObject = semanticObject.optJSONObject("slots");
+                Iterator<String> iterator = slotsObject.keys();
+                bed = slotsObject.optString("bed");
+                type = slotsObject.optString("type");
+                name = slotsObject.optString("name");
+                wsDataList = doWhileForWsData(iterator, slotsObject);
+            }
             traceType(result);
             tracePatientInfo();
             return assembleData(wsDataList);
+        }else if (StringUtils.isEquals(service,"chat")){
+          JSONObject answerObject = jsonObject.optJSONObject("answer");
+            String typeName = answerObject.optString("text");
+            String text = jsonObject.optString("text");
+            return assembleData(traceQA(typeName,text));
         } else {
-            BaseToast.showToastNotRepeat(mContext, "暂不支持您的说法", 2000);
+//            BaseToast.showToastNotRepeat(mContext, "暂不支持您的说法", 2000);
             onError();
             return businessDataInfoList;
         }
+    }
+
+
+    private List<WSData> traceQA(String typeName,String valueText){
+        List<WSData> wsDataList = new ArrayList<>();
+        //组装数据
+        WSData wsData = new WSData();
+        //项目名确定
+        wsData.setName(typeName);
+        DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(typeName);
+        String[] values;
+        if (valueText.contains(",")) {
+            values = valueText.split(",");
+        } else {
+            values = new String[]{valueText};
+        }
+        //多结果遍历解析
+        for (String valueStr : values) {
+            if (documentDetailDic != null) {
+                //项目具有相关ID
+                wsData.setID(documentDetailDic.getItemID());
+                if (StringUtils.isNotBlank(documentDetailDic.getCodeID())) {
+                    //判断选项是值还是选择项
+                    OptionDic optionDic = optionDicDao.getOptionDic(documentDetailDic.getCodeID(), "其他");
+                    if (optionDic != null) {
+                        wsData.setValue(optionDic.getOptCode());
+                        wsData.setValueCaption(optionDic.getOptName());
+                    } else {
+                        wsData.setValueCaption(valueStr);
+                    }
+                } else {
+                    wsData.setValue(valueStr);
+                }
+            } else {
+                wsData.setValue(valueStr);
+            }
+            wsDataList.add(wsData);
+        }
+        return wsDataList;
     }
 
     /**
@@ -252,21 +298,32 @@ public abstract class DataDealUtil {
                 value = simpleDateFormat.format(date);
             }
 
-            //组装数据
-            WSData wsData = new WSData();
+
             //根据映射关系表设置项目值
             MappingInfo mappingInfo = mappingDao.getMappingDic(key);
-            //项目名确定
-            wsData.setName(mappingInfo.getValue());
-            DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue());
+
+            //特殊值特殊对待
+            if (professionalDataTraffic.isDataProfessional(key)){
+                //组装数据
+                WSData professWsData = new WSData();
+                professWsData = professionalDataTraffic.trafficData(mappingInfo,value);
+                wsDataList.add(professWsData);
+                continue;
+            }
+
             String[] values;
             if (value.contains("`")) {
                 values = value.split("`");
             } else {
                 values = new String[]{value};
             }
+            DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue());
             //多结果遍历解析
             for (String valueStr : values) {
+                //组装数据
+                WSData wsData = new WSData();
+                //项目名确定
+                wsData.setName(mappingInfo.getValue());
                 if (documentDetailDic != null) {
                     //项目具有相关ID
                     wsData.setID(documentDetailDic.getItemID());

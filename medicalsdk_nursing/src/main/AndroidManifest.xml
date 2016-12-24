@@ -75,7 +75,10 @@
 
         </activity>
 
-        <activity android:name=".view.StandingRecordActivity">
+        <activity android:name=".view.StandingRecordActivity"
+                  android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
+                  android:screenOrientation="portrait"
+            >
 
         </activity>
 

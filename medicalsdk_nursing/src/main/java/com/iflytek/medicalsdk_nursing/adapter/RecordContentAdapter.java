@@ -66,6 +66,7 @@ public class RecordContentAdapter extends BaseAdapter{
             viewHolder = new ViewHolder();
             viewHolder.nameText = (TextView) convertView.findViewById(R.id.detail_item_name);
             viewHolder.valueText = (TextView) convertView.findViewById(R.id.detail_item_value);
+            viewHolder.expandText = (TextView) convertView.findViewById(R.id.detail_item_extendName);
             viewHolder.deleteLayout = (LinearLayout) convertView.findViewById(R.id.detail_item_delete);
             convertView.setTag(viewHolder);
         }else {
@@ -73,11 +74,15 @@ public class RecordContentAdapter extends BaseAdapter{
         }
         WSData wsData = wsDataList.get(position);
 
+        if (StringUtils.isNotBlank(wsData.getExpandName())){
+            viewHolder.expandText.setVisibility(View.VISIBLE);
+            viewHolder.expandText.setText(wsData.getExpandName());
+        }
         viewHolder.nameText.setText(wsData.getName());
         if (StringUtils.isNotBlank(wsData.getValueCaption())){
             viewHolder.valueText.setText(wsData.getValueCaption());
         }else {
-            if (wsData.getValue().contains(":")){
+            if (StringUtils.isNotBlank(wsData.getValue())&&wsData.getValue().contains(":")){
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHH:mm:ss");
                 Date date = null;
                 try {
@@ -104,6 +109,10 @@ public class RecordContentAdapter extends BaseAdapter{
          * 项目名称
          */
         private TextView nameText;
+        /**
+         * 扩展字段
+         */
+        private TextView expandText;
         /**
          * 值
          */

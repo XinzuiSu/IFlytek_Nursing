@@ -87,6 +87,15 @@ public class MappingDao {
         return mappingInfo;
     }
 
+    /**
+     * 根据名称获取映射信息
+     * @param value
+     * @return
+     */
+    public MappingInfo getMappingDicByName(String value) {
+        MappingInfo mappingInfo = db.queryFrist(MappingInfo.class, "value = ?", value);
+        return mappingInfo;
+    }
 
 
     /**

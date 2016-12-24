@@ -1,5 +1,7 @@
 package com.iflytek.medicalsdk_nursing.domain;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.iflytek.android.framework.db.Column;
 import com.iflytek.android.framework.db.Entity;
@@ -20,24 +22,28 @@ public class DocumentDetailDic {
      */
     @Column
     @SerializedName("Doc_Id")
+    @Nullable
     private String nmrID;
     /**
      * 项目编码
      */
     @Column
     @SerializedName("Item_Id")
+    @Nullable
     private String itemID;
     /**
      * 项目名称
      */
     @Column
     @SerializedName("Item_Name")
+    @Nullable
     private String itemName;
     /**
      * 项目类型
      */
     @Column
     @SerializedName("Item_Type")
+    @Nullable
     private String itemType;
     /**
      * 数据代码
@@ -48,6 +54,7 @@ public class DocumentDetailDic {
 
     @Column
     @SerializedName("Control_Type")
+    @Nullable
     private String controlType;
 
     public String getNmrID() {

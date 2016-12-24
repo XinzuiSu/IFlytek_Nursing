@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iflytek.android.framework.db.DbHelper;
+import com.iflytek.android.framework.toast.BaseToast;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
@@ -206,7 +207,13 @@ public class IFlyNursing {
             return;
         }
         //蓝牙录音的关键，启动SCO连接，耳机话筒才起作用
-        mAudioManager.startBluetoothSco();
+        try{
+            mAudioManager.startBluetoothSco();
+        }catch (Exception exception){
+            BaseToast.showToastNotRepeat(mContext,"请检查蓝牙设备",2000);
+            return;
+        }
+
         //蓝牙SCO连接建立需要时间，连接建立后会发出ACTION_SCO_AUDIO_STATE_CHANGED消息，通过接收该消息而进入后续逻辑。
         //也有可能此时SCO已经建立，则不会收到上述消息，可以startBluetoothSco()前先stopBluetoothSco()
         context.registerReceiver(new BroadcastReceiver() {

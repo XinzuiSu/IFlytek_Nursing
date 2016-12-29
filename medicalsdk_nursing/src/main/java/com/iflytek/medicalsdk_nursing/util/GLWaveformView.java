@@ -13,11 +13,13 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.iflytek.medicalsdk_nursing.R;
+
 
 /**
  * 语音动画效果
@@ -65,6 +67,8 @@ public class GLWaveformView extends SurfaceView implements
 	static final int State_StartRecognize = 6;
 	/** 圆弧等待效果 */
 	static final int State_Waiting = 7;
+	/** 长按话筒改变颜色 */
+	static final int State_LongClick = 8;
 
 	static final int DefaultStartRecordInterval 	= 10;
 	static final int DefaultStopRecordInterval 		= 5;
@@ -103,11 +107,12 @@ public class GLWaveformView extends SurfaceView implements
 
 	private Bitmap mWaitMicBitMap = null;
 	private Bitmap mInitMicBitMap = null;
+	private Bitmap mLongMicBitMap = null;
 
 	/** 识别是否结束 */
 	private boolean mIsOver = false;
 	/** 是否是绘制在顶层 */
-	private boolean isDrawOnTop = false;
+	private boolean isDrawOnTop = true;
 
 	private boolean mInited = false;
 
@@ -124,6 +129,13 @@ public class GLWaveformView extends SurfaceView implements
 		holder = this.getHolder();
 		holder.addCallback(this);
 		holder.setFormat(PixelFormat.TRANSPARENT);
+		initMicRadius();
+	}
+
+	private void initMicRadius() {
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		float circleRadius =  dm.widthPixels * 80.0f / 1080;
+		this.MIC_RADIUS = circleRadius;
 	}
 
 	public synchronized void init() {
@@ -151,6 +163,8 @@ public class GLWaveformView extends SurfaceView implements
 
 				mInitMicBitMap = BitmapFactory.decodeResource(getResources(),
 						R.mipmap.wave_form_mic2);
+				mLongMicBitMap = BitmapFactory.decodeResource(getResources(),
+						R.mipmap.wave_form_mic3);
 			} catch (Exception e) {
 			}
 
@@ -282,6 +296,9 @@ public class GLWaveformView extends SurfaceView implements
 
 						break;
 					}
+					case State_LongClick:
+						myDraw(holder);
+						break;
 					default:
 						break;
 				}
@@ -325,6 +342,12 @@ public class GLWaveformView extends SurfaceView implements
 		if(mWaitMicBitMap != null) {
 			mWaitMicBitMap.recycle();
 			mWaitMicBitMap = null;
+		}
+
+		//bitmap回收
+		if(mLongMicBitMap != null) {
+			mLongMicBitMap.recycle();
+			mLongMicBitMap = null;
 		}
 	}
 
@@ -480,7 +503,7 @@ public class GLWaveformView extends SurfaceView implements
 			if (canvas == null) {
 				return;
 			}
-			canvas.drawColor(Color.WHITE);
+//			canvas.drawColor(Color.WHITE);
 			drawBg(canvas);
 		}
 
@@ -617,6 +640,11 @@ public class GLWaveformView extends SurfaceView implements
 					canvas.drawCircle(headx, heady, DOTS_RADIUS, mDotsPaint);
 					break;
 				}
+				case State_LongClick: {
+					// 绘制反色的麦克风
+					drawImage(canvas, mLongMicBitMap, midW - MIC_RADIUS, midH - MIC_RADIUS, MIC_RADIUS * 2, MIC_RADIUS * 2);
+				}
+					break;
 				default:
 					break;
 			}
@@ -643,7 +671,6 @@ public class GLWaveformView extends SurfaceView implements
 	@Override
 	public void setZOrderOnTop(boolean onTop) {
 		super.setZOrderOnTop(onTop);
-		isDrawOnTop = onTop;
 	}
 
 	/**
@@ -652,13 +679,12 @@ public class GLWaveformView extends SurfaceView implements
 	 */
 	private void drawBg(Canvas canvas)
 	{
-		if(isDrawOnTop)
-		{
-			canvas.drawColor(Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR);
-		}
-		else
-		{
-			canvas.drawColor(Color.WHITE);
-		}
+        canvas.drawColor(Color.WHITE);
 	}
+
+	public synchronized void longClickGLWV() {
+		sendMsg(State_LongClick);
+	}
+
+
 }

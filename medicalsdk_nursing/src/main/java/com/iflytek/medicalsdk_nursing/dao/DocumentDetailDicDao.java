@@ -91,6 +91,15 @@ public class DocumentDetailDicDao {
         return documentDetailDic;
     }
 
+    /**
+     * 根据项目名称获取项目信息
+     * @param itemName
+     * @return
+     */
+    public DocumentDetailDic getDocumentDetailDic(String itemName,String nmrID) {
+        DocumentDetailDic documentDetailDic = db.queryFrist(DocumentDetailDic.class, "itemName = ? and nmrID = ?", itemName,nmrID);
+        return documentDetailDic;
+    }
 
 
     /**

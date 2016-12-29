@@ -17,8 +17,9 @@
     <LinearLayout
         android:id="@+id/instrument_patient_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
+        android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:layout_marginLeft="10dp"
@@ -69,6 +70,28 @@
             android:textColor="#ff0000"
             android:visibility="gone"
             />
+
+        <LinearLayout
+            android:id="@+id/instrument_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="删除"
+                android:padding="5dp"
+                android:background="@color/green"
+                android:maxLines="1"
+                />
+
+        </LinearLayout>
+
+
 
 
     </LinearLayout>

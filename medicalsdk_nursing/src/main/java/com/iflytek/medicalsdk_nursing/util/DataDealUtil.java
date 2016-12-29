@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
+import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.MappingDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
 import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
@@ -81,19 +82,26 @@ public abstract class DataDealUtil {
     private List<BusinessDataInfo> businessDataInfoList;
     private ProfessionalDataTraffic professionalDataTraffic;
 
+    private DocumentDicDao documentDicDao;
+
+    private String mSelectType;
+
     /**
      * 数据处理
+     *
      * @param context
      * @param businessDataInfos
      */
-    public DataDealUtil(Context context,List<BusinessDataInfo> businessDataInfos,int position) {
+    public DataDealUtil(Context context, List<BusinessDataInfo> businessDataInfos, int position, String selectType) {
         this.mContext = context;
         mappingDao = new MappingDao(context);
         documentDetailDicDao = new DocumentDetailDicDao(context);
         optionDicDao = new OptionDicDao(context);
         this.businessDataInfoList = businessDataInfos;
+        documentDicDao = new DocumentDicDao(context);
         this.selectPosition = position;
-        professionalDataTraffic = new ProfessionalDataTraffic(documentDetailDicDao,optionDicDao);
+        professionalDataTraffic = new ProfessionalDataTraffic(documentDetailDicDao, optionDicDao);
+        this.mSelectType = selectType;
     }
 
     public int getSelectPosition() {
@@ -124,20 +132,20 @@ public abstract class DataDealUtil {
             traceType(result);
             tracePatientInfo();
             return assembleData(wsDataList);
-        }else if (StringUtils.isEquals(service,"chat")){
-          JSONObject answerObject = jsonObject.optJSONObject("answer");
+        } else if (StringUtils.isEquals(service, "chat")) {
+            JSONObject answerObject = jsonObject.optJSONObject("answer");
             String typeName = answerObject.optString("text");
             String text = jsonObject.optString("text");
-            return assembleData(traceQA(typeName,text));
+            return assembleData(traceQA(typeName, text));
         } else {
 //            BaseToast.showToastNotRepeat(mContext, "暂不支持您的说法", 2000);
-            onError();
+            onError(1001, "暂不支持您的说法");
             return businessDataInfoList;
         }
     }
 
 
-    private List<WSData> traceQA(String typeName,String valueText){
+    private List<WSData> traceQA(String typeName, String valueText) {
         List<WSData> wsDataList = new ArrayList<>();
         //组装数据
         WSData wsData = new WSData();
@@ -187,7 +195,7 @@ public abstract class DataDealUtil {
         if (StringUtils.isNotBlank(type)) {
             //切换种类
             onTypeSelected(type);
-            if (StringUtils.isNotBlank(recordTime)){
+            if (StringUtils.isNotBlank(recordTime)) {
                 onRecordTime(recordTime);
             }
 //            spinner.setSelection(typeList.indexOf(type));
@@ -272,12 +280,12 @@ public abstract class DataDealUtil {
             key = iterator.next();
             value = slotsObject.optString(key);
             //过滤掉时间
-            if (StringUtils.isEquals(key, "datetime")){
+            if (StringUtils.isEquals(key, "datetime")) {
                 continue;
             }
             if (StringUtils.isEquals(key, "type") || StringUtils.isEquals(key, "bed") || StringUtils.isEquals(key, "name")) {
                 //护理类型时间
-                if (slotsObject.optJSONObject("datetime")!=null){
+                if (slotsObject.optJSONObject("datetime") != null) {
                     String time = "00:00:00";
                     if (StringUtils.isNotBlank(slotsObject.optJSONObject("datetime").optString("time"))) {
                         time = slotsObject.optJSONObject("datetime").optString("time");
@@ -287,7 +295,7 @@ public abstract class DataDealUtil {
                 continue;
             }
             //处理时间格式
-            if (!StringUtils.isEquals(key,"datetime")&&value.contains("date")) {
+            if (!StringUtils.isEquals(key, "datetime") && value.contains("date")) {
                 String time = "00:00:00";
                 if (StringUtils.isNotBlank(slotsObject.optJSONObject(key).optString("time"))) {
                     time = slotsObject.optJSONObject(key).optString("time");
@@ -303,10 +311,10 @@ public abstract class DataDealUtil {
             MappingInfo mappingInfo = mappingDao.getMappingDic(key);
 
             //特殊值特殊对待
-            if (professionalDataTraffic.isDataProfessional(key)){
+            if (professionalDataTraffic.isDataProfessional(key)) {
                 //组装数据
                 WSData professWsData = new WSData();
-                professWsData = professionalDataTraffic.trafficData(mappingInfo,value);
+                professWsData = professionalDataTraffic.trafficData(mappingInfo, value);
                 wsDataList.add(professWsData);
                 continue;
             }
@@ -317,14 +325,16 @@ public abstract class DataDealUtil {
             } else {
                 values = new String[]{value};
             }
-            DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue());
-            //多结果遍历解析
-            for (String valueStr : values) {
-                //组装数据
-                WSData wsData = new WSData();
-                //项目名确定
-                wsData.setName(mappingInfo.getValue());
-                if (documentDetailDic != null) {
+            DocumentDetailDic documentDetailDic = documentDetailDicDao.getDocumentDetailDic(mappingInfo.getValue(), documentDicDao.getDocumentDic(mSelectType).getNmrID());
+            if (documentDetailDic == null) {
+                onError(1002, mappingInfo.getValue() + "不在" + mSelectType + "单据中");
+            } else {
+                //多结果遍历解析
+                for (String valueStr : values) {
+                    //组装数据
+                    WSData wsData = new WSData();
+                    //项目名确定
+                    wsData.setName(mappingInfo.getValue());
                     //项目具有相关ID
                     wsData.setID(documentDetailDic.getItemID());
                     if (StringUtils.isNotBlank(documentDetailDic.getCodeID())) {
@@ -339,11 +349,11 @@ public abstract class DataDealUtil {
                     } else {
                         wsData.setValue(valueStr);
                     }
-                } else {
-                    wsData.setValue(valueStr);
+
+                    wsDataList.add(wsData);
                 }
-                wsDataList.add(wsData);
             }
+
         }
         return wsDataList;
     }
@@ -392,10 +402,11 @@ public abstract class DataDealUtil {
     /**
      * 异常
      */
-    public abstract void onError();
+    public abstract void onError(int errorCode, String errorMsg);
 
     /**
      * 修改时间
+     *
      * @param recordTime
      */
     public abstract void onRecordTime(String recordTime);

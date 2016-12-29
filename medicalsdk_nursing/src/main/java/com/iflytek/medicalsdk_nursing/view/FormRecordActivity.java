@@ -6,18 +6,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -53,12 +52,10 @@ import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.net.SoapResult;
 import com.iflytek.medicalsdk_nursing.net.VolleyTool;
 import com.iflytek.medicalsdk_nursing.util.CustomDialog;
-import com.iflytek.medicalsdk_nursing.util.DataDealUtil;
 import com.iflytek.medicalsdk_nursing.util.GLWaveformView;
 import com.iflytek.medicalsdk_nursing.util.IatSpeechHelper;
 import com.iflytek.medicalsdk_nursing.util.JsonParser;
 import com.iflytek.medicalsdk_nursing.util.MediaplayerUtil;
-import com.iflytek.medicalsdk_nursing.util.MiniWaveSurface;
 import com.iflytek.medicalsdk_nursing.util.NursingSpeecher;
 
 import org.json.JSONException;
@@ -76,12 +73,12 @@ import java.util.List;
 /**
  * @Title: com.iflytek.medicalsdk_nursing
  * @Copyright: IFlytek Co., Ltd. Copyright 16/10/8-上午10:56,  All rights reserved
- * @Description: TODO 持续录音页面;
+ * @Description: TODO 表单模式录入;
  * @author: chenzhilei
  * @data: 16/10/8 上午10:56
  * @version: V1.0
  */
-public class StandingRecordActivity extends Activity {
+public class FormRecordActivity extends Activity {
 
     private static String TAG = "Speech";
 
@@ -162,33 +159,6 @@ public class StandingRecordActivity extends Activity {
      */
     private AudioManager mAudioManager;
 
-    /**
-     * 是否长按语音按钮
-     */
-    private boolean isLongClick = false;
-    /**
-     * 顶部语音时长
-     */
-    private int topVoiceTime = 0;
-
-    /**
-     * 顶部语音时长
-     */
-    private TextView topVoiceTimeTextView;
-
-    private RelativeLayout title;
-
-    /**
-     * 顶部语音效果布局
-     */
-    private LinearLayout topVoice;
-
-    private MiniWaveSurface miniWaveSurface;
-
-    private String selectedType;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -200,10 +170,6 @@ public class StandingRecordActivity extends Activity {
         backLayout = (LinearLayout) findViewById(R.id.record_back);
         saveLayout = (LinearLayout) findViewById(R.id.record_save);
         voiceLayout = (LinearLayout) findViewById(R.id.record_voice);
-        topVoiceTimeTextView = (TextView) findViewById(R.id.tv_top_voice_time);
-        title = (RelativeLayout) findViewById(R.id.record_title_layout);
-        topVoice = (LinearLayout) findViewById(R.id.ll_top_voice);
-        miniWaveSurface = (MiniWaveSurface) findViewById(R.id.mws_speech);
 
         documentDicDao = new DocumentDicDao(this);
         documentDetailDicDao = new DocumentDetailDicDao(this);
@@ -231,7 +197,7 @@ public class StandingRecordActivity extends Activity {
                 if (voicePathList!=null&&voicePathList.size()>0){
                     playVoice();
                 }else {
-                    BaseToast.showToastNotRepeat(StandingRecordActivity.this,"请先录入语音",2000);
+                    BaseToast.showToastNotRepeat(FormRecordActivity.this,"请先录入语音",2000);
                 }
 
             }
@@ -289,8 +255,8 @@ public class StandingRecordActivity extends Activity {
     }
 
     private void initSpeech(){
-        mTextUnderstander = TextUnderstander.createTextUnderstander(StandingRecordActivity.this, mTextUdrInitListener);
-        speechHelper = new IatSpeechHelper(StandingRecordActivity.this);
+        mTextUnderstander = TextUnderstander.createTextUnderstander(FormRecordActivity.this, mTextUdrInitListener);
+        speechHelper = new IatSpeechHelper(FormRecordActivity.this);
         mIat = speechHelper.getmIat();
     }
 
@@ -444,34 +410,32 @@ public class StandingRecordActivity extends Activity {
         //绑定 Adapter到控件
         spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!StringUtils.isEquals(typeList.get(i),selectedType)&&listView.getChildAt(0)!=null){
-                    BaseToast.showToastNotRepeat(StandingRecordActivity.this,"请先保存现有记录单",2000);
-                    spinner.setSelection(typeList.indexOf(selectedType));
-                }
-                selectedType = typeList.get(i);
-            }
+        glWaveFormView.init();
+        Display display = getWindowManager().getDefaultDisplay(); //Activity#getWindowManager()
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+//        int height = size.y;
+//        Log.d("SCREAN_X_Y",width+"------"+height);
+        float circleRadius = width * 80.0f / 1080;
+        glWaveFormView.setCircleRadius(circleRadius);
 
+        glWaveFormView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            public void onClick(View view) {
+                //播放
+                speech();
             }
         });
-
-        initGLView();
         backLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopAll();
                 finish();
             }
         });
         saveLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopAll();
                 checkData();
                 if (businessDataInfoList.size() == 0){
                     showTip("尚未录入任何数据！");
@@ -493,98 +457,13 @@ public class StandingRecordActivity extends Activity {
 //                    String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
                     List<FormCheck> formCheckList = new Gson().fromJson(formStr, new TypeToken<List<FormCheck>>() {
                     }.getType());
-                    CustomDialog customDialog = new CustomDialog(StandingRecordActivity.this, formCheckList);
+                    CustomDialog customDialog = new CustomDialog(FormRecordActivity.this, formCheckList);
                     customDialog.show();
                 }
 
             }
         });
     }
-
-
-    private Handler mHandler = new Handler();
-    /**
-     * 顶部语音计时显示
-     */
-    Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            topVoiceTime++;
-            if (topVoiceTime < 10) {
-                topVoiceTimeTextView.setText("0:0" + topVoiceTime);
-            } else {
-                topVoiceTimeTextView.setText("0:" + topVoiceTime);
-            }
-            mHandler.postDelayed(mRunnable, 1000);
-        }
-    };
-
-
-    /**
-     * 初始化GLView
-     */
-    private void initGLView(){
-
-        glWaveFormView.init();
-        miniWaveSurface.init();
-
-        glWaveFormView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speech();
-                glWaveFormView.setLongClickable(false);
-            }
-        });
-
-        glWaveFormView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                topVoiceTime = 0;
-                topVoiceTimeTextView.setText("0:00");
-                mHandler.postDelayed(mRunnable, 1000);
-                showTopSpeechLayout();
-                glWaveFormView.longClickGLWV();
-                speech();
-                isLongClick = true;
-                return true;
-            }
-        });
-
-        glWaveFormView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_UP:
-                        if (isLongClick) {
-                            speech();
-                        }
-                        break;
-                }
-                return false;
-            }
-        });
-    }
-
-    /**
-     * 显示顶部语音动画
-     */
-    private void showTopSpeechLayout() {
-        title.setVisibility(View.GONE);
-        topVoice.setVisibility(View.VISIBLE);
-    }
-
-
-    /**
-     * 隐藏顶部语音动画
-     */
-    private void hideTopSpeechLayout() {
-        title.setVisibility(View.VISIBLE);
-        topVoice.setVisibility(View.GONE);
-        glWaveFormView.reset();
-        isLongClick = false;
-    }
-
-
 
     /**
      * 校对数据
@@ -670,17 +549,16 @@ public class StandingRecordActivity extends Activity {
 //        String patientStr = getPaints();
         
         typeList = Arrays.asList(getResources().getStringArray(R.array.type));
-        selectedType = typeList.get(0);
         String patientStr = "[{\"age\":\"30\",\"cwdm\":\"1\",\"hzxm\":\"黄旭珍\",\"patid\":\"8184\",\"sex\":\"女\",\"syxh\":\"8918\",\"yexh\":\"0\"},{\"age\":\"28\",\"cwdm\":\"2\",\"hzxm\":\"叶胜斌\",\"patid\":\"5053\",\"sex\":\"男\",\"syxh\":\"5583\",\"yexh\":\"0\"},{\"age\":\"28\",\"cwdm\":\"3\",\"hzxm\":\"陈素荣\",\"patid\":\"5041\",\"sex\":\"女\",\"syxh\":\"5572\",\"yexh\":\"0\"},{\"age\":\"26\",\"cwdm\":\"4\",\"hzxm\":\"孙元生\",\"patid\":\"6059\",\"sex\":\"男\",\"syxh\":\"6586\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"5\",\"hzxm\":\"李金贵\",\"patid\":\"5436\",\"sex\":\"女\",\"syxh\":\"5952\",\"yexh\":\"0\"},{\"age\":\"60\",\"cwdm\":\"6\",\"hzxm\":\"陶华荣\",\"patid\":\"5045\",\"sex\":\"女\",\"syxh\":\"5575\",\"yexh\":\"0\"},{\"age\":\"28\",\"cwdm\":\"7\",\"hzxm\":\"李中桥\",\"patid\":\"5044\",\"sex\":\"男\",\"syxh\":\"5574\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"8\",\"hzxm\":\"郭平安\",\"patid\":\"5418\",\"sex\":\"女\",\"syxh\":\"5935\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"9\",\"hzxm\":\"熊金明\",\"patid\":\"5437\",\"sex\":\"女\",\"syxh\":\"5953\",\"yexh\":\"0\"},{\"age\":\"26\",\"cwdm\":\"10\",\"hzxm\":\"胡建高\",\"patid\":\"5515\",\"sex\":\"男\",\"syxh\":\"6028\",\"yexh\":\"0\"},{\"age\":\"64\",\"cwdm\":\"11\",\"hzxm\":\"宋德厚\",\"patid\":\"5562\",\"sex\":\"男\",\"syxh\":\"6075\",\"yexh\":\"0\"},{\"age\":\"36\",\"cwdm\":\"12\",\"hzxm\":\"杨金辉\",\"patid\":\"8197\",\"sex\":\"女\",\"syxh\":\"8932\",\"yexh\":\"0\"},{\"age\":\"33\",\"cwdm\":\"13\",\"hzxm\":\"吴春林\",\"patid\":\"8186\",\"sex\":\"男\",\"syxh\":\"8920\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"14\",\"hzxm\":\"徐庆兰\",\"patid\":\"5587\",\"sex\":\"女\",\"syxh\":\"6100\",\"yexh\":\"0\"},{\"age\":\"23\",\"cwdm\":\"15\",\"hzxm\":\"丁伟\",\"patid\":\"8196\",\"sex\":\"男\",\"syxh\":\"8931\",\"yexh\":\"0\"},{\"age\":\"30\",\"cwdm\":\"16\",\"hzxm\":\"张世荣\",\"patid\":\"8191\",\"sex\":\"男\",\"syxh\":\"8925\",\"yexh\":\"0\"},{\"age\":\"33\",\"cwdm\":\"17\",\"hzxm\":\"张玉英\",\"patid\":\"5648\",\"sex\":\"女\",\"syxh\":\"6160\",\"yexh\":\"0\"},{\"age\":\"23\",\"cwdm\":\"18\",\"hzxm\":\"甘芳兰\",\"patid\":\"6664\",\"sex\":\"女\",\"syxh\":\"7190\",\"yexh\":\"0\"},{\"age\":\"26\",\"cwdm\":\"19\",\"hzxm\":\"李友翠\",\"patid\":\"6659\",\"sex\":\"女\",\"syxh\":\"7185\",\"yexh\":\"0\"},{\"age\":\"37\",\"cwdm\":\"20\",\"hzxm\":\"王婷荣\",\"patid\":\"6656\",\"sex\":\"女\",\"syxh\":\"7182\",\"yexh\":\"0\"},{\"age\":\"32\",\"cwdm\":\"21\",\"hzxm\":\"孙园园\",\"patid\":\"8278\",\"sex\":\"女\",\"syxh\":\"9005\",\"yexh\":\"0\"},{\"age\":\"47\",\"cwdm\":\"22\",\"hzxm\":\"王容\",\"patid\":\"8274\",\"sex\":\"女\",\"syxh\":\"9001\",\"yexh\":\"0\"},{\"age\":\"32\",\"cwdm\":\"23\",\"hzxm\":\"董广宇\",\"patid\":\"8942\",\"sex\":\"男\",\"syxh\":\"9753\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"24\",\"hzxm\":\"蔡丰英\",\"patid\":\"6657\",\"sex\":\"女\",\"syxh\":\"7183\",\"yexh\":\"0\"},{\"age\":\"23\",\"cwdm\":\"25\",\"hzxm\":\"胡玉清\",\"patid\":\"6658\",\"sex\":\"女\",\"syxh\":\"7184\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"26\",\"hzxm\":\"李丽娟\",\"patid\":\"6657\",\"sex\":\"女\",\"syxh\":\"7183\",\"yexh\":\"0\"},{\"age\":\"37\",\"cwdm\":\"27\",\"hzxm\":\"杨崔欣\",\"patid\":\"6656\",\"sex\":\"女\",\"syxh\":\"7182\",\"yexh\":\"0\"},{\"age\":\"23\",\"cwdm\":\"28\",\"hzxm\":\"王秋香\",\"patid\":\"6663\",\"sex\":\"女\",\"syxh\":\"7189\",\"yexh\":\"0\"},{\"age\":\"23\",\"cwdm\":\"29\",\"hzxm\":\"陈永年\",\"patid\":\"6663\",\"sex\":\"男\",\"syxh\":\"7189\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"30\",\"hzxm\":\"王吉莲\",\"patid\":\"5067\",\"sex\":\"女\",\"syxh\":\"5597\",\"yexh\":\"0\"},{\"age\":\"24\",\"cwdm\":\"31\",\"hzxm\":\"熊建江\",\"patid\":\"5420\",\"sex\":\"男\",\"syxh\":\"5937\",\"yexh\":\"0\"}]";
         List<PatientInfo> patientInfos = new Gson().fromJson(patientStr, new TypeToken<List<PatientInfo>>() {
         }.getType());
-        patientInfoDao = new PatientInfoDao(StandingRecordActivity.this);
+        patientInfoDao = new PatientInfoDao(FormRecordActivity.this);
         patientInfoDao.deletePatientInfo();
         patientInfoDao.saveOrUpdatePaintInfoList(patientInfos);
 //        Log.d("PATIENT", patientStr);
         businessDataInfoList = new ArrayList<BusinessDataInfo>();
 //        businessDataInfoList.add(businessDataInfo);
-        recordAdapter = new RecordAdapter(StandingRecordActivity.this, businessDataInfoList);
+        recordAdapter = new RecordAdapter(FormRecordActivity.this, businessDataInfoList);
         listView.setAdapter(recordAdapter);
         if (businessDataInfoList.size() > 0) {
             patPosition = businessDataInfoList.size() - 1;
@@ -714,14 +592,8 @@ public class StandingRecordActivity extends Activity {
         if (mIat.isListening()) {// 开始前检查状态
             mIat.stopListening();
 //            Toast.makeText(RecordActivity.this,"停止录音",Toast.LENGTH_SHORT).show();
-            if (isLongClick) {
-                mHandler.removeCallbacks(mRunnable);
-                miniWaveSurface.stopListening();
-                hideTopSpeechLayout();
-            } else {
-                glWaveFormView.reset();
-                glWaveFormView.stopListening();
-            }
+            glWaveFormView.reset();
+            glWaveFormView.stopListening();
         } else {
             filePath = System.currentTimeMillis() + ".wav";
             speechHelper.setSavePath(filePath);
@@ -729,12 +601,7 @@ public class StandingRecordActivity extends Activity {
             ret = mIat.startListening(mRecognizerListener);
             if (ret != ErrorCode.SUCCESS) {
                 showTip("听写失败");
-                if (isLongClick) {
-                    miniWaveSurface.reset();
-                    hideTopSpeechLayout();
-                } else {
-                    glWaveFormView.reset();
-                }
+                glWaveFormView.reset();
             } else {
 
             }
@@ -752,11 +619,7 @@ public class StandingRecordActivity extends Activity {
         public void onBeginOfSpeech() {
             // 此回调表示：sdk内部录音机已经准备好了，用户可以开始语音输入
 //            showTip("开始说话");
-            if (isLongClick) {
-                miniWaveSurface.start();
-            } else {
-                glWaveFormView.start();
-            }
+            glWaveFormView.start();
         }
 
         @Override
@@ -765,13 +628,7 @@ public class StandingRecordActivity extends Activity {
             // 错误码：10118(您没有说话)，可能是录音机权限被禁，需要提示用户打开应用的录音权限。
             // 如果使用本地功能（语记）需要提示用户开启语记的录音权限。
             showTip(error.getPlainDescription(false));
-            if (isLongClick) {
-                miniWaveSurface.reset();
-                mHandler.removeCallbacks(mRunnable);
-            } else {
-                glWaveFormView.reset();
-                glWaveFormView.setLongClickable(true);
-            }
+            glWaveFormView.reset();
         }
 
         @Override
@@ -824,65 +681,52 @@ public class StandingRecordActivity extends Activity {
 
         @Override
         public void onResult(final UnderstanderResult result) {
-            if (null != result) {
-                try {
-
-                    DataDealUtil dataDealUtil = new DataDealUtil(StandingRecordActivity.this,businessDataInfoList, patPosition,selectedType) {
-                        @Override
-                        public void onPatientSelected(int position) {
-                            patPosition = position;
-                            int height = getListViewItemHeight(patPosition);
-                            listView.setSelectionFromTop(position+1, height);
-//                            listView.setSelection(position);
-                        }
-
-                        @Override
-                        public void onTypeSelected(String type) {
-                            //切换种类
-                            if (listView.getChildAt(0)!=null){
-                                BaseToast.showToastNotRepeat(StandingRecordActivity.this,"请先保存现有记录单",2000);
-                            }else {
-                                businessDataInfoList.clear();
-                                recordAdapter.updateList(businessDataInfoList);
-                                selectedType = type;
-                                spinner.setSelection(typeList.indexOf(type));
-                            }
-                        }
-
-                        @Override
-                        public void onError(int errorCode, String errorMsg) {
-                            switch (errorCode){
-                                case 1001:
-                                    break;
-                                case 1002:
-                                    BaseToast.showToastNotRepeat(StandingRecordActivity.this,errorMsg,2000);
-                                    break;
-                            }
-                        }
-
-
-                        @Override
-                        public void onRecordTime(String recordTime) {
-                            timeText.setText(recordTime);
-                        }
-                    };
-                    businessDataInfoList = dataDealUtil.transDataForBase(result.getResultString());
-                    patPosition = dataDealUtil.getSelectPosition();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                if (businessDataInfoList!=null&&businessDataInfoList.size()>0){
-                    recordAdapter = new RecordAdapter(StandingRecordActivity.this, businessDataInfoList);
-                    listView.setAdapter(recordAdapter);
-                    setListViewSelecion();
-                }
-
-            } else {
-                Log.d(TAG, "understander result:null");
-                showTip("暂不支持您的说法");
-            }
+//            if (null != result) {
+//                try {
+//
+//////                    DataDealUtil dataDealUtil = new DataDealUtil(FormRecordActivity.this,businessDataInfoList, patPosition,typeList.get(spinner.getSelectedItemPosition())) {
+////                        @Override
+////                        public void onPatientSelected(int position) {
+////                            patPosition = position;
+////                            int height = getListViewItemHeight(patPosition);
+////                            listView.setSelectionFromTop(position+1, height);
+//////                            listView.setSelection(position);
+////                        }
+////
+////                        @Override
+////                        public void onTypeSelected(String type) {
+////                            //切换种类
+////                            spinner.setSelection(typeList.indexOf(type));
+////                        }
+////
+////                        @Override
+////                        public void onError() {
+//////                            showTip("暂不支持您的说法");
+////                            return;
+////                        }
+////
+////                        @Override
+////                        public void onRecordTime(String recordTime) {
+////                            timeText.setText(recordTime);
+////                        }
+////                    };
+////                    businessDataInfoList = dataDealUtil.transDataForBase(result.getResultString());
+////                    patPosition = dataDealUtil.getSelectPosition();
+////                } catch (JSONException e) {
+////                    e.printStackTrace();
+////                } catch (ParseException e) {
+////                    e.printStackTrace();
+////                }
+////                if (businessDataInfoList!=null&&businessDataInfoList.size()>0){
+////                    recordAdapter = new RecordAdapter(FormRecordActivity.this, businessDataInfoList);
+////                    listView.setAdapter(recordAdapter);
+////                    setListViewSelecion();
+////                }
+//
+//            } else {
+//                Log.d(TAG, "understander result:null");
+//                showTip("暂不支持您的说法");
+//            }
         }
 
         @Override
@@ -916,7 +760,7 @@ public class StandingRecordActivity extends Activity {
 
 
     private void showTip(String text) {
-        BaseToast.showToastNotRepeat(StandingRecordActivity.this,text,2000);
+        BaseToast.showToastNotRepeat(FormRecordActivity.this,text,2000);
     }
 
     /**
@@ -981,29 +825,6 @@ public class StandingRecordActivity extends Activity {
         }
     }
 
-    /**
-     * 停止所有录音
-     */
-    private void stopAll(){
-        if (mIat.isListening()) {// 开始前检查状态
-            mIat.stopListening();
-//            Toast.makeText(RecordActivity.this,"停止录音",Toast.LENGTH_SHORT).show();
-            if (isLongClick) {
-                mHandler.removeCallbacks(mRunnable);
-                miniWaveSurface.stopListening();
-                hideTopSpeechLayout();
-            } else {
-                glWaveFormView.reset();
-                glWaveFormView.stopListening();
-            }
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopAll();
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

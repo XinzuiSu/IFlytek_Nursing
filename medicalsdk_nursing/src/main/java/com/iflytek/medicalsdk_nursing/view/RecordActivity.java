@@ -42,7 +42,6 @@ import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.net.SoapResult;
 import com.iflytek.medicalsdk_nursing.net.VolleyTool;
 import com.iflytek.medicalsdk_nursing.util.CustomDialog;
-import com.iflytek.medicalsdk_nursing.util.DataDealUtil;
 import com.iflytek.medicalsdk_nursing.util.GLWaveformView;
 import com.iflytek.medicalsdk_nursing.util.MediaplayerUtil;
 import com.iflytek.medicalsdk_nursing.util.SpeechHelper;
@@ -449,48 +448,48 @@ public class RecordActivity extends Activity {
         public void onResult(final UnderstanderResult result) {
             glWaveFormView.reset();
 
-            try {
-                DataDealUtil dataDealUtil = new DataDealUtil(RecordActivity.this,businessDataInfoList,position) {
-                    @Override
-                    public void onPatientSelected(int position) {
-                        listView.setSelection(position);
-                    }
-
-                    @Override
-                    public void onTypeSelected(String type) {
-                        //切换种类
-                        spinner.setSelection(typeList.indexOf(type));
-                    }
-
-                    @Override
-                    public void onError() {
-                        showTip("暂不支持您的说法");
-                        return;
-                    }
-
-                    @Override
-                    public void onRecordTime(String recordTime) {
-                        timeText.setText(recordTime);
-                    }
-                };
-                businessDataInfoList = dataDealUtil.transDataForBase(result.getResultString());
-                position = dataDealUtil.getSelectPosition();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            recordAdapter = new RecordAdapter(RecordActivity.this, businessDataInfoList);
-            listView.setAdapter(recordAdapter);
-            setListViewSelecion();
-
-            if (voicePathList.size() == 0 || voicePathList.size() <= position) {
-                voicePathList.add(filePath);
-            } else {
-                voicePathList.set(position, voicePathList.get(position) + "," + filePath);
-            }
-            mSpeechUnderstander.startUnderstanding(mSpeechUnderstanderListener);
-//            IFlyNursing.getInstance().getNursingListener().onDataSavedListener(result.getResultString());
+//            try {
+//                DataDealUtil dataDealUtil = new DataDealUtil(RecordActivity.this,businessDataInfoList,position,typeList.get(spinner.getSelectedItemPosition())) {
+//                    @Override
+//                    public void onPatientSelected(int position) {
+//                        listView.setSelection(position);
+//                    }
+//
+//                    @Override
+//                    public void onTypeSelected(String type) {
+//                        //切换种类
+//                        spinner.setSelection(typeList.indexOf(type));
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//                        showTip("暂不支持您的说法");
+//                        return;
+//                    }
+//
+//                    @Override
+//                    public void onRecordTime(String recordTime) {
+//                        timeText.setText(recordTime);
+//                    }
+//                };
+//                businessDataInfoList = dataDealUtil.transDataForBase(result.getResultString());
+//                position = dataDealUtil.getSelectPosition();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//            recordAdapter = new RecordAdapter(RecordActivity.this, businessDataInfoList);
+//            listView.setAdapter(recordAdapter);
+//            setListViewSelecion();
+//
+//            if (voicePathList.size() == 0 || voicePathList.size() <= position) {
+//                voicePathList.add(filePath);
+//            } else {
+//                voicePathList.set(position, voicePathList.get(position) + "," + filePath);
+//            }
+//            mSpeechUnderstander.startUnderstanding(mSpeechUnderstanderListener);
+////            IFlyNursing.getInstance().getNursingListener().onDataSavedListener(result.getResultString());
         }
 
         @Override

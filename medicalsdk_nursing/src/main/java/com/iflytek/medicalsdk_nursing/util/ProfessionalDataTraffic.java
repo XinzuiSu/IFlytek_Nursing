@@ -33,7 +33,7 @@ public class ProfessionalDataTraffic {
     public ProfessionalDataTraffic(DocumentDetailDicDao mDocumentDetailDicDao,OptionDicDao mOptionDicDao){
         this.documentDetailDicDao = mDocumentDetailDicDao;
         this.optionDicDao = mOptionDicDao;
-        String[] proStrs = new String[]{"pregnancies","childbirth","abactio","cxms","medicine","rtqk","edemaSite","edemaDegree","scqk","allergicfood","allergicdrug","ysxz","fetus","birth","gqtime","zctime","urineproteinLevel","urineSugarLevel","smokenum","drinknum","defecationnum"};
+        String[] proStrs = new String[]{"pregnancies","childbirth","abactio","cxms","medicine","rtqk","edemaSite","edemaDegree","scqk","allergicfood","allergicdrug","ysxz","fetus","birth","gqtime","zctime","urineproteinLevel","urineSugarLevel","smokenum","drinknum","defecationnum","smoke","drink"};
         this.proList = Arrays.asList(proStrs);
     }
 
@@ -187,6 +187,16 @@ public class ProfessionalDataTraffic {
             case 20:
                 //"defecationnum"
                 makeData("排便 ","","{0}次\\/日","{"+value+"}次/天");
+                break;
+            case 21:
+                //"smoke"
+                String smokeValue = StringUtils.isEquals(value,"无")?"否":"是";
+                makeData("吸烟","",smokeValue,smokeValue);
+                break;
+            case 22:
+                //"drink"
+                String drinkValue = StringUtils.isEquals(value,"无")?"否":"是";
+                makeData("饮酒","",drinkValue,drinkValue);
                 break;
         }
         return wsData;

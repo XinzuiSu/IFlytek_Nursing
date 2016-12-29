@@ -70,6 +70,7 @@ public class RecordAdapter extends BaseAdapter{
             viewHolder.itemListView = (ListView) convertView.findViewById(R.id.instrument_listView);
             viewHolder.noDataText = (TextView) convertView.findViewById(R.id.instrument_nodata_text);
             viewHolder.patientLayout = (LinearLayout) convertView.findViewById(R.id.instrument_patient_layout);
+            viewHolder.deleteLayout = (LinearLayout) convertView.findViewById(R.id.instrument_delete);
             convertView.setTag(viewHolder);
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -101,6 +102,13 @@ public class RecordAdapter extends BaseAdapter{
         if (position == count){
             viewHolder.itemListView.setSelection(businessDataInfo.getWsDataList().size());
         }
+        viewHolder.deleteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                businessDataInfoList.remove(position);
+                notifyDataSetChanged();
+            }
+        });
         setListViewHeightBasedOnChildren(viewHolder.itemListView);
         return convertView;
     }
@@ -166,5 +174,9 @@ public class RecordAdapter extends BaseAdapter{
          * 数据项list
          */
         private ListView itemListView;
+        /**
+         * 删除
+         */
+        private LinearLayout deleteLayout;
     }
 }

@@ -50,6 +50,7 @@ import com.iflytek.medicalsdk_nursing.domain.FormCheck;
 import com.iflytek.medicalsdk_nursing.domain.MappingInfo;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
+import com.iflytek.medicalsdk_nursing.domain.WSData;
 import com.iflytek.medicalsdk_nursing.net.SoapResult;
 import com.iflytek.medicalsdk_nursing.net.VolleyTool;
 import com.iflytek.medicalsdk_nursing.util.CustomDialog;
@@ -91,6 +92,10 @@ public class StandingRecordActivity extends Activity {
     public static final String DEAFULTFORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private Spinner spinner;
+
+    private Spinner tempSpinner;
+
+    private LinearLayout tempLayout;
 
     // 函数调用返回值
     private int ret = 0;
@@ -187,18 +192,18 @@ public class StandingRecordActivity extends Activity {
 
     private String selectedType;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
         listView = (ListView) findViewById(R.id.record_listView);
         spinner = (Spinner) findViewById(R.id.record_spinner);
+        tempSpinner = (Spinner) findViewById(R.id.record_temp_spinner);
         glWaveFormView = (GLWaveformView) findViewById(R.id.record_voice_image);
         timeText = (TextView) findViewById(R.id.recored_time_text);
         backLayout = (LinearLayout) findViewById(R.id.record_back);
         saveLayout = (LinearLayout) findViewById(R.id.record_save);
+        tempLayout = (LinearLayout) findViewById(R.id.record_temptype_layout);
         voiceLayout = (LinearLayout) findViewById(R.id.record_voice);
         topVoiceTimeTextView = (TextView) findViewById(R.id.tv_top_voice_time);
         title = (RelativeLayout) findViewById(R.id.record_title_layout);
@@ -444,14 +449,28 @@ public class StandingRecordActivity extends Activity {
         //绑定 Adapter到控件
         spinner.setAdapter(adapter);
 
+        String[] mTempItems = getResources().getStringArray(R.array.temp);
+        // 建立Adapter并且绑定数据源
+        ArrayAdapter<String> tempAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mTempItems);
+        tempAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //绑定 Adapter到控件
+        tempSpinner.setAdapter(tempAdapter);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!StringUtils.isEquals(typeList.get(i),selectedType)&&listView.getChildAt(0)!=null){
                     BaseToast.showToastNotRepeat(StandingRecordActivity.this,"请先保存现有记录单",2000);
                     spinner.setSelection(typeList.indexOf(selectedType));
+                }else {
+                    selectedType = typeList.get(i);
+                    if (i==0){
+                        tempLayout.setVisibility(View.VISIBLE);
+                    }else {
+                        tempLayout.setVisibility(View.GONE);
+                    }
                 }
-                selectedType = typeList.get(i);
+
             }
 
             @Override
@@ -472,7 +491,7 @@ public class StandingRecordActivity extends Activity {
             @Override
             public void onClick(View view) {
                 stopAll();
-                checkData();
+//                checkData();
                 if (businessDataInfoList.size() == 0){
                     showTip("尚未录入任何数据！");
                     return;
@@ -486,16 +505,16 @@ public class StandingRecordActivity extends Activity {
                         return;
                     }
                 }
-                if (StringUtils.isEquals(typeList.get(spinner.getSelectedItemPosition()), "体温单")) {
-                    saveRecordInfo(new ArrayList<FormCheck>());
-                }else {
-                     String formStr = IFlyNursing.getInstance().getFormStr();
-//                    String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
+//                if (StringUtils.isEquals(typeList.get(spinner.getSelectedItemPosition()), "体温单")) {
+//                    saveRecordInfo(new ArrayList<FormCheck>());
+//                }else {
+//                     String formStr = IFlyNursing.getInstance().getFormStr();
+                    String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
                     List<FormCheck> formCheckList = new Gson().fromJson(formStr, new TypeToken<List<FormCheck>>() {
                     }.getType());
                     CustomDialog customDialog = new CustomDialog(StandingRecordActivity.this, formCheckList);
                     customDialog.show();
-                }
+//                }
 
             }
         });
@@ -635,6 +654,14 @@ public class StandingRecordActivity extends Activity {
                     hours = Integer.parseInt(string);
                     break;
                 }
+            }
+            //添加体温测量方式
+            for (BusinessDataInfo businessDataInfo : businessDataInfoList) {
+                WSData tempWsData = new WSData();
+                tempWsData.setID("Temperature.Way");
+                tempWsData.setName("体温测量方式");
+                tempWsData.setValueCaption(tempSpinner.getSelectedItem().toString());
+                businessDataInfo.getWsDataList().add(tempWsData);
             }
         }
         DocumentDic documentDic = documentDicDao.getDocumentDic(typeList.get(spinner.getSelectedItemPosition()));
@@ -812,6 +839,10 @@ public class StandingRecordActivity extends Activity {
     private void printResult(RecognizerResult results) {
         String text = JsonParser.parseIatResult(results.getResultString());
         Log.d("result",text);
+        if (text.contains("度")){
+            String[] resultStrs = text.split("度");
+
+        }
         ret = mTextUnderstander.understandText(text, mTextUnderstanderListener);
         if(ret != 0)
         {

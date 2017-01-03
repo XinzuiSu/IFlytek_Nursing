@@ -136,34 +136,69 @@
     </LinearLayout>
 
 
-
     <LinearLayout
-        android:id="@+id/record_type_layout"
+        android:id="@+id/record_type_select_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/record_time_layout"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="文书类型:"
-            android:layout_marginLeft="10dp"
-            android:textColor="@color/comm_gray"
-            android:textSize="14sp"
-            />
-
-        <Spinner
-            android:id="@+id/record_spinner"
+        <LinearLayout
+            android:id="@+id/record_type_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/spinner_bg"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="20dp"
-            ></Spinner>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="文书类型:"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/comm_gray"
+                android:textSize="14sp"
+                />
+
+            <Spinner
+                android:id="@+id/record_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/spinner_bg"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="20dp"
+                ></Spinner>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/record_temptype_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="测量方式:"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/comm_gray"
+                android:textSize="14sp"
+                />
+
+            <Spinner
+                android:id="@+id/record_temp_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/spinner_bg"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="20dp"
+                ></Spinner>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -172,7 +207,7 @@
         android:id="@+id/record_divider_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/record_type_layout"
+        android:layout_below="@id/record_type_select_layout"
         android:background="@mipmap/list_divider"
         />
 
@@ -199,7 +234,5 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"/>
-
-
 
 </RelativeLayout>

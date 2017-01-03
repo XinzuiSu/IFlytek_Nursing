@@ -177,16 +177,16 @@ public class ProfessionalDataTraffic {
 
             case 18:
                 //"smokenum"
-                makeData("吸烟","","{0}支\\/天","{"+value+"}支/天");
+                makeData("吸烟","","{0}支/天",value);
                 break;
 
             case 19:
                 //"drinknum"
-                makeData("饮酒 ","","{0}两\\/天","{"+value+"}两/天");
+                makeData("饮酒 ","","{0}两/天",value);
                 break;
             case 20:
                 //"defecationnum"
-                makeData("排便 ","","{0}次\\/日","{"+value+"}次/天");
+                makeData("排便 ","","{0}次/日",value);
                 break;
             case 21:
                 //"smoke"

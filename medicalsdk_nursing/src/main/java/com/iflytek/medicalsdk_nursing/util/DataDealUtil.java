@@ -175,10 +175,10 @@ public abstract class DataDealUtil {
                 } else {
                     wsData.setValue(valueStr);
                 }
+                wsDataList.add(wsData);
             } else {
-                wsData.setValue(valueStr);
+                onError(1002, typeName + "不在" + mSelectType + "单据中");
             }
-            wsDataList.add(wsData);
         }
         return wsDataList;
     }
@@ -344,12 +344,19 @@ public abstract class DataDealUtil {
                             wsData.setValue(optionDic.getOptCode());
                             wsData.setValueCaption(optionDic.getOptName());
                         } else {
-                            wsData.setValueCaption(valueStr);
+                            //判断选项是其他
+                            optionDic = optionDicDao.getOptionDic(documentDetailDic.getCodeID(), "其他");
+                            if (optionDic !=null){
+                                wsData.setValue(optionDic.getOptCode());
+                                wsData.setValueCaption(valueStr);
+                            }else {
+                                onError(1002, mappingInfo.getValue()+ "没有" + valueStr + "选项");
+                                continue;
+                            }
                         }
                     } else {
                         wsData.setValue(valueStr);
                     }
-
                     wsDataList.add(wsData);
                 }
             }

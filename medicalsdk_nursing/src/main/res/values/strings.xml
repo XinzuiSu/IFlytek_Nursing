@@ -8,4 +8,10 @@
         <item>产科入院评估</item>
         <item>新生儿入院评估</item>
     </string-array>
+
+    <string-array name="temp">
+        <item>腋温</item>
+        <item>口温</item>
+        <item>肛温</item>
+    </string-array>
 </resources>

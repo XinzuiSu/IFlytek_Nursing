@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.iflytek.medicalsdk_nursing.R;
 import com.iflytek.medicalsdk_nursing.adapter.DialogCheckAdapter;
 import com.iflytek.medicalsdk_nursing.domain.FormCheck;
-import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
+import com.iflytek.medicalsdk_nursing.view.SaveDataActivity;
 
 import java.util.List;
 
@@ -45,20 +45,29 @@ public class CustomDialog extends Dialog{
 
 	private List<FormCheck> formCheckList;
 
-	private StandingRecordActivity recordActivity;
+	private SaveDataActivity saveDataActivity;
+	/**
+	 * 设置标记
+	 */
+	private int position;
+	/**
+	 * 是否为全部
+	 */
+	private boolean mIsAll;
 
-	public CustomDialog(Context context, List<FormCheck> formChecks) {
+	public CustomDialog(Context context, List<FormCheck> formChecks ,int i, boolean isAll) {
 		super(context);
 		this.mContext = context;
 		// 索引布局
 		this.view = LayoutInflater.from(mContext).inflate(
 				R.layout.custom_dialog, null);
 		this.formCheckList = formChecks;
-		this.recordActivity = (StandingRecordActivity) context;
+		this.saveDataActivity = (SaveDataActivity) context;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(view);
-
 		this.setCancelable(true);
+		this.position = i;
+		this.mIsAll = isAll;
 		initView();
 	}
 
@@ -81,7 +90,12 @@ public class CustomDialog extends Dialog{
 			@Override
 			public void onClick(View view) {
                 cancel();
-                recordActivity.saveRecordInfo(dialogCheckAdapter.getSelectedFormList());
+				if (mIsAll){
+					saveDataActivity.setFormAll(dialogCheckAdapter.getSelectedFormList());
+				}else {
+					saveDataActivity.setFormByPositon(dialogCheckAdapter.getSelectedFormList(),position);
+				}
+
 			}
 		});
 	}

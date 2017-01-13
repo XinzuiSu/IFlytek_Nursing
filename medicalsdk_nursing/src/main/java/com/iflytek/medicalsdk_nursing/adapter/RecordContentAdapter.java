@@ -50,6 +50,7 @@ public class RecordContentAdapter extends BaseAdapter{
 
     @Override
     public Object getItem(int position) {
+
         return wsDataList.get(position);
     }
 

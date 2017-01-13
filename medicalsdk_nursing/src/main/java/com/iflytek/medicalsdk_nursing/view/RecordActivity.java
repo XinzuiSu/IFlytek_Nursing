@@ -41,7 +41,6 @@ import com.iflytek.medicalsdk_nursing.domain.OptionDic;
 import com.iflytek.medicalsdk_nursing.domain.PatientInfo;
 import com.iflytek.medicalsdk_nursing.net.SoapResult;
 import com.iflytek.medicalsdk_nursing.net.VolleyTool;
-import com.iflytek.medicalsdk_nursing.util.CustomDialog;
 import com.iflytek.medicalsdk_nursing.util.GLWaveformView;
 import com.iflytek.medicalsdk_nursing.util.MediaplayerUtil;
 import com.iflytek.medicalsdk_nursing.util.SpeechHelper;
@@ -347,8 +346,8 @@ public class RecordActivity extends Activity {
                     String formStr = "[{\"Name\":\"体温单\",\"Bldm\":\"F612A775-FCD7-483D-A2B9-7A1F2EECB40B\"},{\"Name\":\"新生儿体温单\",\"Bldm\":\"1DCFA477-6D8D-4C8B-B8CE-F846BBC615D4\"},{\"Name\":\"术前护理评估单\",\"Bldm\":\"333B2609-5504-4227-A520-793C3B95FD73\"},{\"Name\":\"术后护理评估单\",\"Bldm\":\"2B84147E-5824-473D-A84A-E21B166FAA42\"},{\"Name\":\"危重患者护理记录单\",\"Bldm\":\"E17CAE68-1C7F-4B78-B271-BC456787ED18\"},{\"Name\":\"血糖记录表\",\"Bldm\":\"1673A68E-3F32-4AEE-B2B3-83406699F538\"},{\"Name\":\"病人转科交接记录单\",\"Bldm\":\"E33F9E6A-DFF1-4057-B321-D73B70FB7799\"},{\"Name\":\"内科住院患者护理记录单\",\"Bldm\":\"A9B12E93-9606-4618-AC1E-EA7F22894478\"},{\"Name\":\"新入院评估单\",\"Bldm\":\"C2400BDC-B92F-489E-93A3-51E258B26F67\"},{\"Name\":\"(新)新入院评估单\",\"Bldm\":\"268f2ff1-25f9-4f67-ac46-fd0aa50f725a\"},{\"Name\":\"(新)产科入院评估单\",\"Bldm\":\"f26fa771-29c9-4cc0-81e7-2aca18b1a2e0\"},{\"Name\":\"(新)儿科入院评估单\",\"Bldm\":\"f816cb84-4c8c-430b-b76e-2735488ec9ef\"},{\"Name\":\"(新)新生儿入院评估单\",\"Bldm\":\"7526e6ac-01d6-41b2-8cfc-133742226bfb\"}]";
                     List<FormCheck> formCheckList = new Gson().fromJson(formStr, new TypeToken<List<FormCheck>>() {
                     }.getType());
-                    CustomDialog customDialog = new CustomDialog(RecordActivity.this, formCheckList);
-                    customDialog.show();
+//                    CustomDialog customDialog = new CustomDialog(RecordActivity.this, formCheckList);
+//                    customDialog.show();
                 }
 
             }

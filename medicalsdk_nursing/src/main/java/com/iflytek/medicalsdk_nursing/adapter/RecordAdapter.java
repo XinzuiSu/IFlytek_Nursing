@@ -37,10 +37,13 @@ public class RecordAdapter extends BaseAdapter{
 
     private int count;
 
+    private StandingRecordActivity recordActivity;
+
     public RecordAdapter(Context context, List<BusinessDataInfo> businessDataInfos){
         this.businessDataInfoList = businessDataInfos;
         this.mContext = context;
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        recordActivity = (StandingRecordActivity) mContext;
     }
 
     @Override
@@ -106,6 +109,7 @@ public class RecordAdapter extends BaseAdapter{
             @Override
             public void onClick(View view) {
                 businessDataInfoList.remove(position);
+                recordActivity.deletePosition(position);
                 notifyDataSetChanged();
             }
         });

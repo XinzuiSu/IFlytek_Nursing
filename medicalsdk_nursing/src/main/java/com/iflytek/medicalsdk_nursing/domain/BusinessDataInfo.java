@@ -37,9 +37,13 @@ public class BusinessDataInfo {
      */
     private String age;
     /**
-     * 病历代码
+     * 病历代码（文书代码）
      */
     private String nmrCode;
+    /**
+     * 病历名称（文书类型）
+     */
+    private String nmrName;
 
     /**
      * 数据日期
@@ -55,6 +59,10 @@ public class BusinessDataInfo {
      * 业务数据对象
      */
     private List<WSData> wsDataList;
+    /**
+     * 同步表单列表
+     */
+    private List<FormCheck> formList;
 
     public String getSyxh() {
         return syxh;
@@ -134,5 +142,21 @@ public class BusinessDataInfo {
 
     public void setWsDataList(List<WSData> wsDataList) {
         this.wsDataList = wsDataList;
+    }
+
+    public List<FormCheck> getFormList() {
+        return formList;
+    }
+
+    public void setFormList(List<FormCheck> formList) {
+        this.formList = formList;
+    }
+
+    public String getNmrName() {
+        return nmrName;
+    }
+
+    public void setNmrName(String nmrName) {
+        this.nmrName = nmrName;
     }
 }

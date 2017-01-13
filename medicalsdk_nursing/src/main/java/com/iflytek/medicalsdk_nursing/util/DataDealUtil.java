@@ -1,6 +1,7 @@
 package com.iflytek.medicalsdk_nursing.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.iflytek.android.framework.util.StringUtils;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
@@ -100,8 +101,8 @@ public abstract class DataDealUtil {
         this.businessDataInfoList = businessDataInfos;
         documentDicDao = new DocumentDicDao(context);
         this.selectPosition = position;
-        professionalDataTraffic = new ProfessionalDataTraffic(documentDetailDicDao, optionDicDao);
         this.mSelectType = selectType;
+        professionalDataTraffic = new ProfessionalDataTraffic(documentDetailDicDao, optionDicDao,documentDicDao.getDocumentDic(mSelectType).getNmrID());
     }
 
     public int getSelectPosition() {
@@ -114,6 +115,7 @@ public abstract class DataDealUtil {
      * @return
      */
     public List<BusinessDataInfo> transDataForBase(String result) throws JSONException, ParseException {
+        Log.d("RESULT",result);
         jsonObject = new JSONObject(result);
         service = jsonObject.optString("service");
         //护理业务

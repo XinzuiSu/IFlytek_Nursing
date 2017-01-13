@@ -17,6 +17,7 @@ import com.iflytek.medicalsdk_nursing.dao.DocumentDetailDicDao;
 import com.iflytek.medicalsdk_nursing.dao.DocumentDicDao;
 import com.iflytek.medicalsdk_nursing.dao.OptionDicDao;
 import com.iflytek.medicalsdk_nursing.dao.PatientInfoDao;
+import com.iflytek.medicalsdk_nursing.domain.BusinessDataInfo;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDetailDic;
 import com.iflytek.medicalsdk_nursing.domain.DocumentDic;
 import com.iflytek.medicalsdk_nursing.domain.OptionDic;
@@ -52,6 +53,8 @@ public class IFlyNursing {
     private String[] times;
 
     private String formStr;
+
+    private List<BusinessDataInfo> businessDataInfoList;
 
     public NursingListener getNursingListener() {
         return nursingListener;
@@ -177,7 +180,6 @@ public class IFlyNursing {
     private void init(Context context) {
         openBluetooth(context);
 //        SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://bj.voicecloud.cn/index.htm");
-
         SpeechUtility.createUtility(context, SpeechConstant.APPID + "=58008545" + ",server_url= http://116.213.69.199:1028/index.htm");
         initDataBase(context);
     }
@@ -235,5 +237,11 @@ public class IFlyNursing {
         }, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_CHANGED));
     }
 
+    public List<BusinessDataInfo> getBusinessDataInfoList() {
+        return businessDataInfoList;
+    }
 
+    public void setBusinessDataInfoList(List<BusinessDataInfo> businessDataInfoList) {
+        this.businessDataInfoList = businessDataInfoList;
+    }
 }

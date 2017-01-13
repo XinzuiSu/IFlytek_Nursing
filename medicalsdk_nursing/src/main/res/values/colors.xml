@@ -9,6 +9,12 @@
     <color name="text_blue">#6fd0f4</color>
     <color name="green">#00cccb</color>
     <color name="red">#ef3737</color>
+    <color name="yellow">#ffff00</color>
+    <color name="orange">#ff9900</color>
+    <color name="cyan">#4a86e8</color>
+    <color name="purple">#9900ff</color>
+    <color name="pink">#ff00ff</color>
+    <color name="brown">#980000</color>
     <color name="white">#FFFFFF</color>
     <!-- 修改照片-->
     <color name="versioncheck_title_textcolor">#7c7c7c</color>

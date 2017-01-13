@@ -36,6 +36,11 @@ public class DialogCheckAdapter extends BaseAdapter{
         this.mContext = context;
         this.formCheckList = formChecks;
         selectedFormList = new ArrayList<>();
+        for (FormCheck formCheck:formCheckList){
+            if (formCheck.isCheck()){
+                selectedFormList.add(formCheck);
+            }
+        }
     }
 
     @Override

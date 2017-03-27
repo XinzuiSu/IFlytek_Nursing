@@ -2,13 +2,25 @@ package com.iflytek.nursing;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.iflytek.android.framework.toast.BaseToast;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.TextUnderstanderListener;
+import com.iflytek.cloud.UnderstanderResult;
+import com.iflytek.medicalsdk_nursing.adapter.RecordAdapter;
+import com.iflytek.medicalsdk_nursing.util.DataDealUtil;
 import com.iflytek.medicalsdk_nursing.util.NursingListener;
 import com.iflytek.medicalsdk_nursing.util.NursingSpeecher;
 import com.iflytek.medicalsdk_nursing.base.IFlyNursing;
+import com.iflytek.medicalsdk_nursing.view.StandingRecordActivity;
+
+import org.json.JSONException;
+
+import java.text.ParseException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private NursingSpeecher nursingSpeecher;
 
     private TextView resultText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,5 +67,8 @@ public class MainActivity extends AppCompatActivity {
                 nursingSpeecher.startRecord();
             }
         });
+
+
+
     }
 }

@@ -36,7 +36,7 @@ public class ProfessionalDataTraffic {
     public ProfessionalDataTraffic(DocumentDetailDicDao mDocumentDetailDicDao,OptionDicDao mOptionDicDao,String nmrID){
         this.documentDetailDicDao = mDocumentDetailDicDao;
         this.optionDicDao = mOptionDicDao;
-        String[] proStrs = new String[]{"pregnancies","childbirth","abactio","cxms","medicine","rtqk","edemaSite","edemaDegree","scqk","allergicfood","allergicdrug","ysxz","fetus","birth","gqtime","zctime","urineproteinLevel","urineSugarLevel","smokenum","drinknum","defecationnum","smoke","drink","diarrhea","position","lxrjdh","sleep","urineprotein","skin","weight","zigongshousuo","adlscore"};
+        String[] proStrs = new String[]{"pregnancies","childbirth","abactio","cxms","medicine","rtqk","edemaSite","edemaDegree","scqk","allergicfood","allergicdrug","ysxz","fetus","birth","gqtime","zctime","urineproteinLevel","urineSugarLevel","smokenum","drinknum","defecationnum","smoke","drink","diarrhea","position","lxrjdh","sleep","urineprotein","skin","weight","zigongshousuo","adlscore","range","max","min","enemaBefore","enemaAfter"};
         this.proList = Arrays.asList(proStrs);
         this.type = nmrID;
     }
@@ -252,8 +252,8 @@ public class ProfessionalDataTraffic {
                 break;
             case 22:
                 //"drink"
-                String drinkValue = StringUtils.isEquals(value,"无")?"否":"是";
-                makeData("饮酒","",drinkValue,drinkValue);
+//                String drinkValue = StringUtils.isEquals(value,"无")?"否":"是";
+                makeData("饮酒","",value,value);
                 break;
             case 23:
                 //diarrhea
@@ -324,6 +324,22 @@ public class ProfessionalDataTraffic {
                 }else {
                     makeData("ADL评分","","自理(100分)","自理(100分)");
                 }
+                break;
+            case 32:
+                //range
+                makeData("皮肤","范围","范围",value);
+                break;
+            case 33:
+                makeData("上标说明","上标",value,value);
+                break;
+            case 34:
+                makeData("下标说明","下标",value,value);
+                break;
+            case 35:
+                makeData("输入量","灌肠前大便次数",value,value);
+                break;
+            case 36:
+                makeData("痰量","灌肠后大便次数",value,value);
                 break;
         }
         return wsData;

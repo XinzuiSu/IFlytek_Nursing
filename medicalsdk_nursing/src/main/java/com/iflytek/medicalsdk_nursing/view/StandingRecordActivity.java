@@ -154,7 +154,9 @@ public class StandingRecordActivity extends Activity {
     //语音相关保存业务操作
 //   	private IFLYAction iflyAction;
    	//NIS    IP地址
-//   	private String NISUrl = GlobalCache.getCache().getConfigByCode("0030", "");
+//   	private String NISUrl = "http://192.168.1.253:8732";
+
+    private String NISUrl = "http://192.168.200.62:8732";
     /**
      * 播放按钮
      */
@@ -249,7 +251,7 @@ public class StandingRecordActivity extends Activity {
             }
         });
         initSpeech();
-        startRecording();
+//        startRecording();
 
     }
 
@@ -867,6 +869,7 @@ public class StandingRecordActivity extends Activity {
             listView.setSelectionFromTop(position+1, height);
         }
     }
+
 
 
     private TextUnderstanderListener mTextUnderstanderListener = new TextUnderstanderListener() {

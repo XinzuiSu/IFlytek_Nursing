@@ -23,4 +23,8 @@
 
     <!-- 拍照-->
     <color name="versioncheck_cancle_textcolor">#b9b9b9</color>
+
+    <!-- Tab页选中字体颜色 -->
+    <color name="sec_tab_text_select">#00cccb</color>
+    <color name="sec_tab_text_unselect">#666666</color>
 </resources>

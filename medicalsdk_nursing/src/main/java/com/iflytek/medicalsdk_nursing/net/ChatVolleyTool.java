@@ -130,7 +130,7 @@ public abstract class ChatVolleyTool implements Handler.Callback {
 //            mLoadingDialog.show();
         }
        // final String map = "{\"methodName\":\"creatRoom\",\"userId\":\"111331\",\"userName\":\"创建人\",\"targetId\":\"222\",\"targetName\":\"患者\"}";
-        String requestUrl = serverIP;
+        final String requestUrl = serverIP;
         Log.d("Request", "请求地址:" + requestUrl);
         Log.d("Request", "请求参数:" + paramsMap);
 
@@ -138,7 +138,7 @@ public abstract class ChatVolleyTool implements Handler.Callback {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("Request", "请求方法：" + "\n请求结果：" + response);
+                        Log.d("Request", "请求方法：" +requestUrl+ "\n请求结果：" + response);
                         try {
                             ResponseData1 rd ;
                             rd = new Gson().fromJson(response, ResponseData1.class);

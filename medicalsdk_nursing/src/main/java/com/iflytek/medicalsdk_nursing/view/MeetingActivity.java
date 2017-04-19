@@ -1,8 +1,12 @@
 package com.iflytek.medicalsdk_nursing.view;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -35,9 +39,12 @@ import com.iflytek.medicalsdk_nursing.util.IatSpeechHelper;
 import com.iflytek.medicalsdk_nursing.util.JsonParser;
 import com.iflytek.medicalsdk_nursing.util.MiniWaveSurface;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,6 +95,13 @@ public class MeetingActivity extends Activity {
      * 内容liseView
      */
     private ListView mMeetingListView;
+
+    private String filePath;
+    /**
+     * 录音文件列表
+     */
+    private List<String> voicePathList = new ArrayList<>();
+
     // 函数调用返回值
     private int ret = 0;
 
@@ -118,10 +132,13 @@ public class MeetingActivity extends Activity {
     private String mUserId;
     private String mUserName;
 
+    private boolean isFirstEnter = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meeting);
+        isFirstEnter = true;
         //初始化布局
         initView();
         //初始化语音按钮布局
@@ -158,6 +175,12 @@ public class MeetingActivity extends Activity {
                             mChatList.addAll(messageInfoList);
                             mChatAdapter.update(mChatList);
                             mMeetingListView.smoothScrollToPosition(mChatList.size());
+
+                            for (MessageInfo messageInfo : messageInfoList) {
+                                if ("0".equals(messageInfo.getUserFlag()) && !isFirstEnter) {
+                                    new ChargeFileTask(MeetingActivity.this, messageInfo).execute();
+                                }
+                            }
                         }
                         break;
                     case 1002:
@@ -170,6 +193,8 @@ public class MeetingActivity extends Activity {
                             finish();
                             showTip("关闭会议");
                         }
+                        break;
+                    case 1004:
                         break;
                 }
             }
@@ -193,6 +218,31 @@ public class MeetingActivity extends Activity {
                 showTip(result.getResult());
             }
         };
+    }
+
+    private void uploadVoice(int id, String fileName, String base64) {
+        String serverUrl = "http://192.168.58.32:18080/ChatServer/rest/chat/upload";
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", String.valueOf(id));
+            jsonObject.put("fileName", fileName);
+            jsonObject.put("fileString", base64);
+            jsonArray.put(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mVolleyTool.sendJsonRequest(1005, false, jsonArray.toString(), Request.Method.POST, serverUrl);
+
+    }
+
+    private String getBase64(String path) throws Exception {
+        File file = new File(path);
+        FileInputStream inputFile = new FileInputStream(file);
+        byte[] buffer = new byte[(int)file.length()];
+        inputFile.read(buffer);
+        inputFile.close();
+        return Base64.encodeToString(buffer,Base64.DEFAULT);
     }
 
     private void initDate() {
@@ -406,9 +456,9 @@ public class MeetingActivity extends Activity {
                 glWaveFormView.stopListening();
             }
         } else {
-//            filePath = System.currentTimeMillis() + ".wav";
-//            speechHelper.setSavePath(filePath);
-//            voicePathList.add(filePath);
+            filePath = System.currentTimeMillis() + ".wav";
+            speechHelper.setSavePath(filePath);
+
             ret = mIat.startListening(mRecognizerListener);
             if (ret != ErrorCode.SUCCESS) {
                 showTip("听写失败");
@@ -418,9 +468,11 @@ public class MeetingActivity extends Activity {
                 } else {
                     glWaveFormView.reset();
                 }
+                return;
             } else {
 
             }
+            voicePathList.add(filePath);
         }
 
     }
@@ -511,7 +563,8 @@ public class MeetingActivity extends Activity {
 //            mChatAdapter.notifyDataSetChanged();
 //            mMeetingListView.setSelection(mChatList.size());
             //提交数据到服务器
-            sendMessageToNet(voiceText.toString());
+            isFirstEnter = false;
+            sendMessageToNet(voiceText.toString(),filePath);
 
         }
     }
@@ -547,6 +600,67 @@ public class MeetingActivity extends Activity {
         }
     }
 
+    class ChargeFileTask extends AsyncTask<Void, Integer, Integer> {
+
+        private Context context;
+
+        private MessageInfo messageInfo;
+        private String mBase64;
+        private int mId;
+        private String mFileName;
+
+        ChargeFileTask(Context context, MessageInfo messageInfo) {
+            this.context = context;
+            this.messageInfo = messageInfo;
+        }
+
+        /**
+         * 运行在UI线程中，在调用doInBackground()之前执行
+         */
+        @Override
+        protected void onPreExecute() {
+        }
+
+        /**
+         * 后台运行的方法，可以运行非UI线程，可以执行耗时的方法
+         */
+        @Override
+        protected Integer doInBackground(Void... params) {
+            mBase64 = null;
+            try {
+                mId = messageInfo.getId();
+                mBase64 = getBase64(Environment.getExternalStorageDirectory() +
+                        "/iflytek/" + voicePathList.get(voicePathList.size() - 1));
+                mFileName = voicePathList.get(voicePathList.size() - 1);
+                return 1;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return 0;
+        }
+
+        /**
+         * 运行在ui线程中，在doInBackground()执行完毕后执行
+         */
+        @Override
+        protected void onPostExecute(Integer integer) {
+            uploadVoice(mId,mFileName,mBase64);
+            //压缩失败
+            if (0 == integer) {
+                BaseToast.showToastNotRepeat(context, "语音文件压缩失败",1000);
+            }
+        }
+
+        /**
+         * 在publishProgress()被调用以后执行，publishProgress()用于更新进度
+         */
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+
+        }
+    }
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -581,22 +695,6 @@ public class MeetingActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-//
-//    private void init() {
-//        String serverUrl = "http://192.168.58.32:18080/ChatServer/rest/chat/service";
-//        JSONObject jsonObject = new JSONObject();
-//        try {
-//            jsonObject.put("methodName","creatRoom");
-//            jsonObject.put("userId","xfsu9");
-//            jsonObject.put("userName","苏笑风");
-//            jsonObject.put("targetId","12345");
-//            jsonObject.put("targetName","患者");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        mVolleyTool.sendJsonRequest(1001, false, jsonObject.toString(), Request.Method.POST, serverUrl);
-//    }
-
     /**
      * 获取消息
      *
@@ -622,7 +720,7 @@ public class MeetingActivity extends Activity {
      *
      * @param message
      */
-    private void sendMessageToNet(String message) {
+    private void sendMessageToNet(String message,String filePath) {
         String serverUrl = "http://192.168.58.32:18080/ChatServer/rest/chat/service";
         JSONObject jsonObject = new JSONObject();
         try {
@@ -630,6 +728,7 @@ public class MeetingActivity extends Activity {
             jsonObject.put("userId", mUserId);
             jsonObject.put("userName", mUserName);
             jsonObject.put("message", message);
+            jsonObject.put("fileName", filePath);
         } catch (JSONException e) {
             e.printStackTrace();
         }

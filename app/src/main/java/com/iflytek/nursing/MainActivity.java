@@ -33,8 +33,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mNewMeeting;
     private Button mAddMeeting;
 
-    private static String USERID = "sxf36";
+    private static String USERID = "sxf53";
     private static String USERNAME = "苏笑风";
+    private static String CHATID = "3333";
 
     /**
      * 网络请求
@@ -196,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             jsonObject.put("methodName", "creatRoom");
             jsonObject.put("userId", USERID);
             jsonObject.put("userName", USERNAME);
+            jsonObject.put("chatId", CHATID);
             jsonObject.put("targetId", "12345");
             jsonObject.put("targetName", "患者");
         } catch (JSONException e) {
